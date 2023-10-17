@@ -17,11 +17,11 @@ public class CarController : MonoBehaviour {
     [SerializeField, Min(0)] private float springStrength = 400f;
     [SerializeField, Min(0)] private float springDamper = 5f;
     [SerializeField, Min(0)] private float springDistance = 0.12f;
+    public float rearAxilOffset = -0.5f;
+
 
     [Header("Wheels")]
-    [SerializeField, Min(0)] private float applyKinematicAfterVelocity = 0.3f;
-    [SerializeField, Min(0)] private float tireStaticFriction = 1000f;
-    [SerializeField, Min(0)] private float tireKinematicFriction = 500f;
+    [SerializeField, Min(0)] private float tireFriction = 500f;
     [SerializeField, Min(0)] private float tireRadiusVisual = 0.25f;
     [SerializeField, Min(0)] private float tireWidth = 0.1f;
 
@@ -34,7 +34,7 @@ public class CarController : MonoBehaviour {
 
     [Header("Steering")]
     [SerializeField] private AnimationCurve steerCurve;
-    [SerializeField, Min(0)] private float maxSteeringAngle = 45f;
+    [SerializeField, Min(0)] private float maxSteeringAngle = 60f;
     [SerializeField, Min(0)] private float steerSpeed = 20f;
     private float currentWheelAngle = 0;
 
@@ -47,7 +47,7 @@ public class CarController : MonoBehaviour {
 
     private void Update() {
         //HandleSteering();
-        HandleTireVisual();
+        UpdateTireVisual();
 
 
         if (Input.GetKey(KeyCode.E)) {
@@ -60,7 +60,7 @@ public class CarController : MonoBehaviour {
 
     private void FixedUpdate() {
         HandleSuspention();
-        HandleSideGrip();
+        ApplySideGrip();
         HandleAccelerationAndDeceleration();
     }
 
@@ -90,8 +90,9 @@ public class CarController : MonoBehaviour {
         //wheelsAngle += sideVelocity * steeringCorrection;
 
         foreach (Transform tireTransform in tireToSteerTransformList) {
-            currentWheelAngle = Mathf.Lerp(currentWheelAngle, desiredWheelAngle, steerSpeed * Time.deltaTime);
-            tireTransform.localEulerAngles = new Vector3(0, currentWheelAngle, 0);
+            //currentWheelAngle = Mathf.Lerp(currentWheelAngle, desiredWheelAngle, steerSpeed * Time.deltaTime);
+            //tireTransform.localEulerAngles = new Vector3(0, currentWheelAngle, 0);
+            tireTransform.localEulerAngles = new Vector3(0, desiredWheelAngle, 0);
         }
     }
 
@@ -108,59 +109,42 @@ public class CarController : MonoBehaviour {
             throttleInputNormalized *= 1.5f;
         }
 
-        float forceToApply = 0;
-        float directionOfForce = 0;
-        // auto decelerating
-        if (throttleInputNormalized == 0) {
-            forceToApply = autoDecelerationForce;
-            if (body.velocity.magnitude > 0.1f) directionOfForce = Vector3.Dot(transform.forward, body.velocity) > 0 ? -1 : 1;
-        }
-        else {
-            // acceletating or decelerating
-            float throtleToApply = acceleration * powerCurve.Evaluate(Mathf.Clamp01(Mathf.Abs(Vector3.Dot(transform.forward, body.velocity)) / carTopSpeed));
-
-            forceToApply = Vector3.Dot(transform.forward * throttleInputNormalized, body.velocity) > 0 ? throtleToApply : deceleration;
-            directionOfForce = throttleInputNormalized;
-        }
-
         foreach (Transform tireTransform in tireToApplyAccelerationForceTransformList) {
             if (Physics.Raycast(tireTransform.position, -tireTransform.transform.up, out RaycastHit tireRay, springDistance)) {
-                Vector3 tireDirection = tireTransform.forward;
-                Vector3 forwardByNormal = Vector3.Dot(tireDirection, Vector3.Cross(tireTransform.right, tireRay.normal).normalized) * Vector3.Cross(tireTransform.right, tireRay.normal).normalized;
+                Vector3 forwardByNormal = Vector3.Dot(tireTransform.forward, Vector3.Cross(tireTransform.right, tireRay.normal).normalized) * Vector3.Cross(tireTransform.right, tireRay.normal).normalized;
 
-                /*
-                Vector3 tireWorldVelocity = body.GetPointVelocity(tireTransform.position);
+                Vector3 tireForwardVelocity = Vector3.Dot(body.GetPointVelocity(tireTransform.position), forwardByNormal) * forwardByNormal;
+                
 
+                float forceToApply = 0;
+                float directionOfForce = 0;
+                // auto decelerating
                 if (throttleInputNormalized == 0) {
                     forceToApply = autoDecelerationForce;
-                    if (forwardByNormal.magnitude > 0.1f) directionOfForce = Vector3.Dot(tireDirection, tireWorldVelocity) > 0 ? -1 : 1;
+                    if (tireForwardVelocity.magnitude > 0.1f) directionOfForce = Vector3.Dot(forwardByNormal, tireForwardVelocity) > 0 ? -1 : 1;
                 }
                 else {
                     // acceletating or decelerating
                     float throtleToApply = acceleration * powerCurve.Evaluate(Mathf.Clamp01(Mathf.Abs(Vector3.Dot(transform.forward, body.velocity)) / carTopSpeed));
-                    Debug.Log("throtleToApply: " + throtleToApply);
                 
-                    forceToApply = Vector3.Dot(tireDirection * throttleInputNormalized, tireWorldVelocity) > 0 ? throtleToApply : deceleration;
+                    forceToApply = Vector3.Dot(forwardByNormal * throttleInputNormalized, tireForwardVelocity) > 0 ? throtleToApply : deceleration;
                     directionOfForce = throttleInputNormalized;
                 }
-                 */
+                 
 
                 body.AddForceAtPosition(forwardByNormal * directionOfForce * forceToApply / tireToApplyAccelerationForceTransformList.Count * Time.fixedDeltaTime, tireRay.point);
             }
         }
     }
 
-    private void HandleSideGrip() {
+    private void ApplySideGrip() {
         foreach (Transform tireTransform in tireTransformList) {
             if (Physics.Raycast(tireTransform.position, -tireTransform.transform.up, out RaycastHit tireRay, springDistance)) {
                 Vector3 velocityRightComponent = Vector3.Dot(body.GetPointVelocity(tireTransform.position), Vector3.Cross(tireTransform.forward, tireRay.normal).normalized) * Vector3.Cross(tireTransform.forward, tireRay.normal).normalized;
 
                 Vector3 sideVelocity = velocityRightComponent * body.mass / tireTransformList.Count * (springDistance - tireRay.distance);
 
-                if (sideVelocity.magnitude < applyKinematicAfterVelocity)
-                    body.AddForceAtPosition(-sideVelocity * tireStaticFriction * Time.fixedDeltaTime, tireRay.point);
-                else
-                    body.AddForceAtPosition(-sideVelocity.normalized * tireKinematicFriction * Time.fixedDeltaTime, tireRay.point);
+                    body.AddForceAtPosition(-sideVelocity * tireFriction * Time.fixedDeltaTime, tireRay.point);
 
 
                 //Debug.Log("sideVelocity.magnitude: " + sideVelocity.magnitude);
@@ -188,7 +172,7 @@ public class CarController : MonoBehaviour {
         }
     }
 
-    private void HandleTireVisual() {
+    private void UpdateTireVisual() {
         foreach (Transform tireTransformVisual in tireTransformVisualList) {
             Transform parentTire = tireTransformVisual.transform.parent;
             Physics.Raycast(tireTransformVisual.transform.parent.position, -parentTire.transform.up, out RaycastHit tireRay, springDistance);
@@ -235,7 +219,7 @@ public class CarController : MonoBehaviour {
 
     [ExecuteInEditMode]
     private void OnDrawGizmos() {
-        HandleTireVisual();
+        UpdateTireVisual();
     }
 
 }

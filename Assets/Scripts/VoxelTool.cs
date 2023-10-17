@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 
 public class VoxelTool : MonoBehaviour {
-    public static VoxelTool instance { get; private set; }
+    public static VoxelTool Instance { get; private set; }
 
 
     public Action<bool> OnSetToolActive;
@@ -13,7 +13,7 @@ public class VoxelTool : MonoBehaviour {
 
 
     private void Awake() {
-        instance = this;
+        Instance = this;
 
         toolIsActive = false;
         currentBrush = Voxel.Type.Solid;
@@ -35,7 +35,7 @@ public class VoxelTool : MonoBehaviour {
         }
 
 
-        Ray ray = Player.instance.GetPlayerCamera().ScreenPointToRay(Input.mousePosition);
+        Ray ray = Player.Instance.GetPlayerCamera().ScreenPointToRay(Input.mousePosition);
         if (Physics.Raycast(ray, out RaycastHit hit)) {
 
             Vector3 cellPosition = new Vector3(
@@ -55,12 +55,12 @@ public class VoxelTool : MonoBehaviour {
 
 
                 if (Input.GetMouseButtonDown(1)) {
-                    Map.instrance.TryRemoveVoxel(voxel.transform.position);
+                    Map.Instrance.TryRemoveVoxel(voxel.transform.position);
                 }
             }
 
             if (Input.GetMouseButtonDown(0)) {
-                Map.instrance.TryAddVoxel(cellPosition, currentBrush);
+                Map.Instrance.TryAddVoxel(cellPosition, currentBrush);
             }
 
 

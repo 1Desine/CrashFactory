@@ -8,14 +8,29 @@ public class CarAgent : MonoBehaviour {
     private List<Vector3> roadPath = new List<Vector3> {
         new Vector3(0,0,0),
         new Vector3(0,0,1),
-        new Vector3(1,0,2),
-        new Vector3(2,0,2),
-        new Vector3(3,0,2),
-        new Vector3(4,0,3),
-        new Vector3(4,0,4),
+        new Vector3(0,0,2),
+        new Vector3(0,0,3),
+        new Vector3(0,0,4),
+
+        new Vector3(1,0,4),
+        new Vector3(2,0,4),
         new Vector3(3,0,4),
-        new Vector3(3,0,3),
-        new Vector3(2,0,2),
+        new Vector3(4,0,4),
+
+        new Vector3(5,0,5),
+        new Vector3(5,0,6),
+
+        new Vector3(6,0,6),
+        new Vector3(7,0,6),
+        new Vector3(7,0,7),
+        new Vector3(8,0,7),
+        new Vector3(9,0,7),
+        new Vector3(10,0,7),
+
+        new Vector3(10,0,4),
+        new Vector3(10,0,0),
+        new Vector3(4,0,0),
+        new Vector3(0,0,0),
     };
     private int currentWayPoint;
 
@@ -29,7 +44,7 @@ public class CarAgent : MonoBehaviour {
 
 
     private void Update() {
-        carController.Agent_Steer(Vector3.SignedAngle(transform.forward, nextWayPoint() - transform.position, Vector3.up));
+        carController.Agent_Steer(Vector3.SignedAngle(transform.forward, nextWayPoint() - transform.position + transform.forward * carController.rearAxilOffset, Vector3.up));
     }
 
 
@@ -39,13 +54,22 @@ public class CarAgent : MonoBehaviour {
 
         currentWayPoint = Mathf.Min(currentWayPoint, roadPath.Count - 1);
 
-        if ((roadPath[currentWayPoint] - transform.position).magnitude < 1) {
-            Debug.Log("got here");
+        int smoothing = 1 + (int)body.velocity.magnitude / 5;
+        Vector3 pointToGo = Vector3.zero;
+        for (int i = 0; i < smoothing; i++) {
+            pointToGo += roadPath[Mathf.Min(currentWayPoint + i, roadPath.Count - 1)];
+        }
+        pointToGo /= smoothing;
+
+
+        if ((pointToGo - transform.position).magnitude < 1f) {
+            //Debug.Log("got here");
             if (roadPath.Count - 1 > currentWayPoint) currentWayPoint++;
-            else Debug.Log("finish");
+            currentWayPoint %= roadPath.Count - 1;
         }
 
-        return roadPath[Mathf.Min(currentWayPoint, roadPath.Count - 1)];
+
+        return pointToGo;
     }
 
 

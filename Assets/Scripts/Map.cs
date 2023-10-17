@@ -6,7 +6,7 @@ using static Map;
 
 
 public class Map : MonoBehaviour {
-    public static Map instrance { get; private set; }
+    public static Map Instrance { get; private set; }
 
     [SerializeField] private VoxelSO voxelSO;
     [SerializeField] private Transform voxelsHolder;
@@ -22,7 +22,7 @@ public class Map : MonoBehaviour {
 
 
     private void Awake() {
-        instrance = this;
+        Instrance = this;
 
         voxelsDictionary = new Dictionary<Vector3, Voxel>();
     }

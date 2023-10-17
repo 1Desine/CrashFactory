@@ -11,8 +11,8 @@ public class VoxelToolUI : MonoBehaviour {
 
 
     private void Start() {
-        VoxelTool.instance.OnSetToolActive += VoxelTool_OnSetToolActive;
-        VoxelTool.instance.OnSetBrush += VoxelTool_OnSetBrush;
+        VoxelTool.Instance.OnSetToolActive += VoxelTool_OnSetToolActive;
+        VoxelTool.Instance.OnSetBrush += VoxelTool_OnSetBrush;
 
         Hide();
     }

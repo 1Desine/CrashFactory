@@ -20,14 +20,14 @@ public class Voxel : MonoBehaviour {
     }
 
     private void Start() {
-        Map.instrance.OnDeleteVoxels += Map_OnDeleteVoxels;
+        Map.Instrance.OnDeleteVoxels += Map_OnDeleteVoxels;
     }
 
     private void Map_OnDeleteVoxels() {
         DestroySelf();
     }
     public void DestroySelf() {
-        Map.instrance.OnDeleteVoxels -= Map_OnDeleteVoxels;
+        Map.Instrance.OnDeleteVoxels -= Map_OnDeleteVoxels;
 
         Destroy(gameObject);
     }
