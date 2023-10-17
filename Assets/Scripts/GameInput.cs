@@ -21,7 +21,10 @@ public class GameInput : MonoBehaviour {
     public float GetCameraHightDeltaFloat() {
         return playerInputAction.Player.CameraHeight.ReadValue<float>();
     }
-    public bool GetMoveAndLookButton() {
+    public bool GetFreeCameraButton() {
+        return playerInputAction.Player.FreeCamera.IsInProgress();
+    }
+    public bool GetPivotAroundButton() {
         return playerInputAction.Player.MoveAndLook.IsInProgress();
     }
     public Vector2 GetMoveVector() {

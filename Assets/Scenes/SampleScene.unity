@@ -705,6 +705,7 @@ MonoBehaviour:
   playerCamera: {fileID: 1001191757716676223}
   moveSpeed: 10
   lookSensitivity: 0.2
+  cameraDistanceChenge: 2
 --- !u!4 &1614013579
 Transform:
   m_ObjectHideFlags: 0
@@ -2660,13 +2661,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5715839289521504784}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.6425394, y: -0.0024444617, z: 0.0020498128, w: 0.7662461}
+  m_LocalRotation: {x: 0.5, y: 0, z: 0, w: 0.8660254}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1614013579}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 60, y: 0, z: 0}
 --- !u!65 &9099679774473484845
 BoxCollider:
   m_ObjectHideFlags: 0

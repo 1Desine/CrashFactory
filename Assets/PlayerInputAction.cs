@@ -62,6 +62,15 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""FreeCamera"",
+                    ""type"": ""Button"",
+                    ""id"": ""1d4f85c2-d357-4900-8d7a-850b093f7d79"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -152,6 +161,17 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
                     ""action"": ""CameraHeight"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""dc5b78d7-cda7-4028-93a6-bfb608fb6415"",
+                    ""path"": ""<Mouse>/rightButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""FreeCamera"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -164,6 +184,7 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
         m_Player_Look = m_Player.FindAction("Look", throwIfNotFound: true);
         m_Player_MoveAndLook = m_Player.FindAction("MoveAndLook", throwIfNotFound: true);
         m_Player_CameraHeight = m_Player.FindAction("CameraHeight", throwIfNotFound: true);
+        m_Player_FreeCamera = m_Player.FindAction("FreeCamera", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -229,6 +250,7 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Look;
     private readonly InputAction m_Player_MoveAndLook;
     private readonly InputAction m_Player_CameraHeight;
+    private readonly InputAction m_Player_FreeCamera;
     public struct PlayerActions
     {
         private @PlayerInputAction m_Wrapper;
@@ -237,6 +259,7 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
         public InputAction @Look => m_Wrapper.m_Player_Look;
         public InputAction @MoveAndLook => m_Wrapper.m_Player_MoveAndLook;
         public InputAction @CameraHeight => m_Wrapper.m_Player_CameraHeight;
+        public InputAction @FreeCamera => m_Wrapper.m_Player_FreeCamera;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -258,6 +281,9 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
             @CameraHeight.started += instance.OnCameraHeight;
             @CameraHeight.performed += instance.OnCameraHeight;
             @CameraHeight.canceled += instance.OnCameraHeight;
+            @FreeCamera.started += instance.OnFreeCamera;
+            @FreeCamera.performed += instance.OnFreeCamera;
+            @FreeCamera.canceled += instance.OnFreeCamera;
         }
 
         private void UnregisterCallbacks(IPlayerActions instance)
@@ -274,6 +300,9 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
             @CameraHeight.started -= instance.OnCameraHeight;
             @CameraHeight.performed -= instance.OnCameraHeight;
             @CameraHeight.canceled -= instance.OnCameraHeight;
+            @FreeCamera.started -= instance.OnFreeCamera;
+            @FreeCamera.performed -= instance.OnFreeCamera;
+            @FreeCamera.canceled -= instance.OnFreeCamera;
         }
 
         public void RemoveCallbacks(IPlayerActions instance)
@@ -297,5 +326,6 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
         void OnLook(InputAction.CallbackContext context);
         void OnMoveAndLook(InputAction.CallbackContext context);
         void OnCameraHeight(InputAction.CallbackContext context);
+        void OnFreeCamera(InputAction.CallbackContext context);
     }
 }
