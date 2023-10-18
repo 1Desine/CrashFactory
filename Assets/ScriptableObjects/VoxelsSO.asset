@@ -12,6 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e030245c56c143b438e476d606fed8cc, type: 3}
   m_Name: VoxelsSO
   m_EditorClassIdentifier: 
-  voxelPrefabsList:
-  - {fileID: 1735015697700999862, guid: 9945a3bdae55159499865f39798181d1, type: 3}
-  - {fileID: 1735015697700999862, guid: 4e0e558e2c295c24eb82d8c7f7e1a393, type: 3}
+  solidVoxelPrefabs: {fileID: -4488082775514117840, guid: 9945a3bdae55159499865f39798181d1, type: 3}
+  roadVoxelPrefabs: {fileID: -7583424375515485136, guid: 4e0e558e2c295c24eb82d8c7f7e1a393, type: 3}

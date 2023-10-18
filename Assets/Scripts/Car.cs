@@ -71,7 +71,8 @@ public class Car : MonoBehaviour {
     }
 
     private void Update() {
-        Agent_Steer(Vector3.SignedAngle(transform.forward, nextWayPoint() - transform.position + transform.forward * rearAxilOffset, Vector3.up));
+        Vector2 currentWayPoint = GetCurrentWayPoint();
+        Agent_Steer(Vector3.SignedAngle(transform.forward, new Vector3(currentWayPoint.x, 0, currentWayPoint.y) - transform.position + transform.forward * rearAxilOffset, Vector3.up));
 
 
         //HandleSteering();
@@ -79,8 +80,8 @@ public class Car : MonoBehaviour {
 
 
         if (Input.GetKey(KeyCode.E)) {
-            transform.rotation = Quaternion.identity;
-            transform.position += Vector3.up * 0.1f;
+            transform.eulerAngles = new Vector3(0, transform.eulerAngles.y, 0);
+            transform.position += Vector3.up * 0.01f;
             body.velocity = Vector3.zero;
             body.angularVelocity = Vector3.zero;
         }
@@ -221,6 +222,74 @@ public class Car : MonoBehaviour {
 
 
 
+
+
+    [ExecuteInEditMode]
+    private void OnDrawGizmos() {
+        UpdateTireVisual();
+
+        if (body == null) return;
+        Gizmos.color = Color.green;
+
+        Vector2 currentWayPoint = GetCurrentWayPoint();
+        Gizmos.DrawSphere(new Vector3(currentWayPoint.x, 0, currentWayPoint.y), 0.3f);
+    }
+
+
+    private List<Vector2> roadPath = new List<Vector2> {
+        new Vector2(0,0),
+        new Vector2(0,1),
+        new Vector2(0,2),
+        new Vector2(0,3),
+        new Vector2(0,4),
+
+        new Vector2(1,4),
+        new Vector2(2,4),
+        new Vector2(3,4),
+        new Vector2(4,4),
+
+        new Vector2(5,5),
+        new Vector2(5,6),
+
+        new Vector2(6,6),
+        new Vector2(7,6),
+        new Vector2(7,7),
+        new Vector2(8,7),
+        new Vector2(9,7),
+        new Vector2(10,7),
+
+        new Vector2(10,4),
+        new Vector2(10,0),
+        new Vector2(4,0),
+        new Vector2(0,0),
+    };
+    private int currentWayPoint;
+
+
+
+
+    private Vector2 GetCurrentWayPoint() {
+        if (roadPath.Count == 0) return transform.forward;
+
+        currentWayPoint = Mathf.Min(currentWayPoint, roadPath.Count - 1);
+
+        int smoothing = 1 + (int)body.velocity.magnitude / 5;
+        Vector2 pointToGo = Vector2.zero;
+        for (int i = 0; i < smoothing; i++) {
+            pointToGo += roadPath[Mathf.Min(currentWayPoint + i, roadPath.Count - 1)];
+        }
+        pointToGo /= smoothing;
+
+        if (new Vector2(pointToGo.x - transform.position.x, pointToGo.y - transform.position.z).magnitude < 1f) {
+            //Debug.Log("got here");
+            if (roadPath.Count - 1 > currentWayPoint) currentWayPoint++;
+            currentWayPoint %= roadPath.Count - 1;
+        }
+
+        return pointToGo;
+    }
+
+
     public void Agent_Steer(float steeringAngle) {
         steeringAngle = Mathf.Clamp(steeringAngle, -maxSteeringAngle, maxSteeringAngle);
 
@@ -239,71 +308,5 @@ public class Car : MonoBehaviour {
             tireTransform.localEulerAngles = new Vector3(0, currentWheelAngle, 0);
         }
     }
-
-
-    [ExecuteInEditMode]
-    private void OnDrawGizmos() {
-        UpdateTireVisual();
-
-        if (body == null) return;
-        Gizmos.color = Color.green;
-        Gizmos.DrawSphere(nextWayPoint(), 0.3f);
-    }
-
-
-    private List<Vector3> roadPath = new List<Vector3> {
-        new Vector3(0,0,0),
-        new Vector3(0,0,1),
-        new Vector3(0,0,2),
-        new Vector3(0,0,3),
-        new Vector3(0,0,4),
-
-        new Vector3(1,0,4),
-        new Vector3(2,0,4),
-        new Vector3(3,0,4),
-        new Vector3(4,0,4),
-
-        new Vector3(5,0,5),
-        new Vector3(5,0,6),
-
-        new Vector3(6,0,6),
-        new Vector3(7,0,6),
-        new Vector3(7,0,7),
-        new Vector3(8,0,7),
-        new Vector3(9,0,7),
-        new Vector3(10,0,7),
-
-        new Vector3(10,0,4),
-        new Vector3(10,0,0),
-        new Vector3(4,0,0),
-        new Vector3(0,0,0),
-    };
-    private int currentWayPoint;
-
-
-
-
-    private Vector3 nextWayPoint() {
-        if (roadPath.Count == 0) return transform.forward;
-
-        currentWayPoint = Mathf.Min(currentWayPoint, roadPath.Count - 1);
-
-        int smoothing = 1 + (int)body.velocity.magnitude / 5;
-        Vector3 pointToGo = Vector3.zero;
-        for (int i = 0; i < smoothing; i++) {
-            pointToGo += roadPath[Mathf.Min(currentWayPoint + i, roadPath.Count - 1)];
-        }
-        pointToGo /= smoothing;
-
-        if ((pointToGo - transform.position).magnitude < 1f) {
-            //Debug.Log("got here");
-            if (roadPath.Count - 1 > currentWayPoint) currentWayPoint++;
-            currentWayPoint %= roadPath.Count - 1;
-        }
-
-        return pointToGo;
-    }
-
-
 
 }

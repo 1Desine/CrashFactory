@@ -8,15 +8,19 @@ public class VoxelTool : MonoBehaviour {
     public Action<bool> OnSetToolActive;
     private bool toolIsActive;
 
-    public Action<Voxel.Type> OnSetBrush;
-    private Voxel.Type currentBrush;
+    public Action<VoxelType> OnSetBrush;
+    private VoxelType currentBrush;
 
+    public enum VoxelType {
+        Solid,
+        Road,
+    }
 
     private void Awake() {
         Instance = this;
 
         toolIsActive = false;
-        currentBrush = Voxel.Type.Solid;
+        currentBrush = VoxelType.Solid;
     }
 
 
@@ -60,7 +64,7 @@ public class VoxelTool : MonoBehaviour {
             }
 
             if (Input.GetMouseButtonDown(0)) {
-                Level.Instrance.TryAddVoxel(cellPosition, currentBrush);
+                Level.Instrance.TryAddVoxel(currentBrush.ToString(), cellPosition);
             }
 
 

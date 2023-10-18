@@ -6,16 +6,18 @@ using UnityEngine;
 public class Player : MonoBehaviour {
     public static Player Instance { get; private set; }
 
+    [Header("Movement")]
     [SerializeField] private Camera playerCamera;
-
     [SerializeField] private float lookSensitivity = 0.2f;
     [SerializeField] private float moveSpeed = 10f;
     [SerializeField] private AnimationCurve moveSpeedCurve;
     [SerializeField] private float cameraDistanceChenge = 1f;
     [SerializeField] private AnimationCurve cameraDictanceChengeCurve;
     [SerializeField] private float zoomSpeed = 1f;
-    [SerializeField] private float zoomTilt = 1f;
-    [SerializeField] private float applyZoomTiltSinseDistance = 10f;
+    [SerializeField] private float zoomPitch = 10f;
+    [SerializeField] private float applyZoomPitchSinseDistance = 10f;
+    [SerializeField] private float zoomYaw = 0.03f;
+    [SerializeField] private float applyZoomYawSinseDistance = 20f;
     [SerializeField] private AnimationCurve zoomTiltCurve;
 
 
@@ -41,7 +43,7 @@ public class Player : MonoBehaviour {
             if (lookPivotPoint != Vector3.zero) {
                 Vector2 lookInput = GameInput.Instance.GetLookDeltaVector();
 
-                PivotAroundPoint(hit.point, lookInput * lookSensitivity);
+                PivotAroundPoint(lookPivotPoint, lookInput * lookSensitivity);
             }
             else if (hit.collider != null) {
                 lookPivotPoint = hit.point;
@@ -69,11 +71,15 @@ public class Player : MonoBehaviour {
             RaycastHit hit;
             Physics.Raycast(ray, out hit);
             if (hit.collider != null) {
-                if ((transform.position - hit.point).magnitude < applyZoomTiltSinseDistance)
-                    PivotAroundPoint(hit.point, Vector2.up * zoomInput * zoomTilt * zoomTiltCurve.Evaluate((transform.position - hit.point).magnitude / applyZoomTiltSinseDistance));
+                if ((transform.position - hit.point).magnitude < applyZoomPitchSinseDistance)
+                    PivotAroundPoint(hit.point, Vector2.up * zoomInput * zoomPitch * zoomTiltCurve.Evaluate((transform.position - hit.point).magnitude / applyZoomPitchSinseDistance));
 
                 if (desiredPosition.y < maxHeight)
                     transform.position = desiredPosition;
+
+                if ((transform.position - hit.point).magnitude < applyZoomYawSinseDistance)
+                if (zoomInput > 0)
+                    RotatePlayerY_CameraX(new Vector2(Vector3.SignedAngle(transform.forward, hit.point - transform.position, Vector3.up) * zoomInput * zoomYaw, 0));
             }
         }
 

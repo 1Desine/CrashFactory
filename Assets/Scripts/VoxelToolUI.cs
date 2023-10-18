@@ -18,7 +18,7 @@ public class VoxelToolUI : MonoBehaviour {
     }
 
 
-    private void VoxelTool_OnSetBrush(Voxel.Type currentBrush) {
+    private void VoxelTool_OnSetBrush(VoxelTool.VoxelType currentBrush) {
         toolUsingText.text = currentBrush.ToString();
     }
     private void VoxelTool_OnSetToolActive(bool toolIsActive) {
