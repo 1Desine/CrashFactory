@@ -55,12 +55,12 @@ public class VoxelTool : MonoBehaviour {
 
 
                 if (Input.GetMouseButtonDown(1)) {
-                    Map.Instrance.TryRemoveVoxel(voxel.transform.position);
+                    Level.Instrance.TryRemoveVoxel(voxel.transform.position);
                 }
             }
 
             if (Input.GetMouseButtonDown(0)) {
-                Map.Instrance.TryAddVoxel(cellPosition, currentBrush);
+                Level.Instrance.TryAddVoxel(cellPosition, currentBrush);
             }
 
 

@@ -8,9 +8,20 @@ public class Player : MonoBehaviour {
 
     [SerializeField] private Camera playerCamera;
 
-    [SerializeField] private float moveSpeed = 10f;
     [SerializeField] private float lookSensitivity = 0.2f;
+    [SerializeField] private float moveSpeed = 10f;
+    [SerializeField] private AnimationCurve moveSpeedCurve;
     [SerializeField] private float cameraDistanceChenge = 1f;
+    [SerializeField] private AnimationCurve cameraDictanceChengeCurve;
+    [SerializeField] private float zoomSpeed = 1f;
+    [SerializeField] private float zoomTilt = 1f;
+    [SerializeField] private float applyZoomTiltSinseDistance = 10f;
+    [SerializeField] private AnimationCurve zoomTiltCurve;
+
+
+    private float minHeight = 1;
+    private float maxHeight = 100;
+
 
     private Vector3 lookPivotPoint;
 
@@ -28,21 +39,9 @@ public class Player : MonoBehaviour {
             Physics.Raycast(ray, out hit);
 
             if (lookPivotPoint != Vector3.zero) {
-
-                Vector2 moveInput = GameInput.Instance.GetMoveVector();
                 Vector2 lookInput = GameInput.Instance.GetLookDeltaVector();
 
-                Vector3 toPoint = lookPivotPoint - transform.position;
-                Vector3 upMoveDirection = Vector3.Cross(transform.right, toPoint);
-                Vector3 rightMoveDirection = Vector3.Cross(transform.up, toPoint);
-
-                transform.position += (upMoveDirection * lookInput.y + rightMoveDirection * -lookInput.x) * lookSensitivity * Mathf.PI / 180;
-
-                transform.eulerAngles += Vector3.up * lookInput.x * lookSensitivity;
-                playerCamera.transform.eulerAngles = new Vector3(
-                    Mathf.Clamp(playerCamera.transform.eulerAngles.x - lookInput.y * lookSensitivity, 0, 90),
-                    playerCamera.transform.eulerAngles.y,
-                    playerCamera.transform.eulerAngles.z);
+                PivotAroundPoint(hit.point, lookInput * lookSensitivity);
             }
             else if (hit.collider != null) {
                 lookPivotPoint = hit.point;
@@ -50,24 +49,57 @@ public class Player : MonoBehaviour {
         }
         else lookPivotPoint = Vector3.zero;
 
+
+        var hight = transform.position.y;
         // free camera
         if (GameInput.Instance.GetFreeCameraButton()) {
             Vector2 moveInput = GameInput.Instance.GetMoveVector();
             Vector2 lookInput = GameInput.Instance.GetLookDeltaVector();
 
-            transform.position += (transform.right * moveInput.x + transform.forward * moveInput.y) * moveSpeed * Time.deltaTime;
-            transform.eulerAngles += Vector3.up * lookInput.x * lookSensitivity;
+            transform.position += (transform.right * moveInput.x + transform.forward * moveInput.y) * moveSpeed * moveSpeedCurve.Evaluate(hight / maxHeight) * Time.deltaTime;
 
-            playerCamera.transform.eulerAngles = new Vector3(
-                Mathf.Clamp(playerCamera.transform.eulerAngles.x - lookInput.y * lookSensitivity, 0, 90),
-                playerCamera.transform.eulerAngles.y,
-                playerCamera.transform.eulerAngles.z);
+            RotatePlayerY_CameraX(lookInput * lookSensitivity);
         }
 
         // zoom in and out
-        transform.position += ray.direction * GameInput.Instance.GetCameraHightDeltaFloat() * cameraDistanceChenge * Time.deltaTime;
+        float zoomInput = GameInput.Instance.GetCameraHightDeltaFloat() * zoomSpeed * Time.deltaTime;
+        if (zoomInput != 0) {
+            Vector3 desiredPosition = transform.position + ray.direction * zoomInput * cameraDistanceChenge * cameraDictanceChengeCurve.Evaluate(hight / maxHeight);
+
+            RaycastHit hit;
+            Physics.Raycast(ray, out hit);
+            if (hit.collider != null) {
+                if ((transform.position - hit.point).magnitude < applyZoomTiltSinseDistance)
+                    PivotAroundPoint(hit.point, Vector2.up * zoomInput * zoomTilt * zoomTiltCurve.Evaluate((transform.position - hit.point).magnitude / applyZoomTiltSinseDistance));
+
+                if (desiredPosition.y < maxHeight)
+                    transform.position = desiredPosition;
+            }
+        }
+
+        // hight check
+        if (transform.position.y < minHeight) transform.position = new Vector3(transform.position.x, minHeight, transform.position.z);
+        if (transform.position.y > maxHeight) transform.position = new Vector3(transform.position.x, maxHeight, transform.position.z);
     }
 
+
+    private void PivotAroundPoint(Vector3 pivotPoint, Vector2 rotate) {
+        Vector3 toPoint = pivotPoint - transform.position;
+        Vector3 upMoveDirection = Vector3.Cross(transform.right, toPoint);
+        Vector3 rightMoveDirection = Vector3.Cross(transform.up, toPoint);
+
+        transform.position += (upMoveDirection * rotate.y + rightMoveDirection * -rotate.x) * Mathf.PI / 180;
+
+        RotatePlayerY_CameraX(rotate);
+    }
+    private void RotatePlayerY_CameraX(Vector2 rotate) {
+        transform.eulerAngles += Vector3.up * rotate.x;
+
+        playerCamera.transform.eulerAngles = new Vector3(
+            Mathf.Clamp(playerCamera.transform.eulerAngles.x - rotate.y, 0, 90),
+            playerCamera.transform.eulerAngles.y,
+            playerCamera.transform.eulerAngles.z);
+    }
 
     public Camera GetPlayerCamera() {
         return Instance.playerCamera;

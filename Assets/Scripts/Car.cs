@@ -1,10 +1,10 @@
 // REFERENCE https://youtu.be/CdPYlj5uZeI or https://www.youtube.com/watch?v=CdPYlj5uZeI&t=13s&ab_channel=ToyfulGames
 
 using System.Collections.Generic;
-using System.IO.Pipes;
 using UnityEngine;
+using UnityEngine.InputSystem.XR;
 
-public class CarController : MonoBehaviour {
+public class Car : MonoBehaviour {
 
     [SerializeField] private List<Transform> tireTransformList;
 
@@ -41,11 +41,39 @@ public class CarController : MonoBehaviour {
     private Rigidbody body;
 
 
+    public Type type;
+    public enum Type {
+        Pickup,
+        Van,
+        TankTruck,
+        RoadTrain1,
+        RoadTrain3,
+        RoadTrain5,
+    }
+
+
+
+    [SerializeField]
+    public class carInfo {
+        public Vector3 position;
+        public Quaternion rotation;
+
+        public Type type;
+
+
+
+    }
+
+
+
     private void Awake() {
         body = GetComponent<Rigidbody>();
     }
 
     private void Update() {
+        Agent_Steer(Vector3.SignedAngle(transform.forward, nextWayPoint() - transform.position + transform.forward * rearAxilOffset, Vector3.up));
+
+
         //HandleSteering();
         UpdateTireVisual();
 
@@ -75,7 +103,7 @@ public class CarController : MonoBehaviour {
         }
         // straightning
         if (steerInputNormalized == 0) {
-            steerInputNormalized = Mathf.Lerp(steerInputNormalized, 0, steerSpeed / 2);
+            currentWheelAngle -= currentWheelAngle / 2 * Time.deltaTime;
         }
 
 
@@ -83,6 +111,8 @@ public class CarController : MonoBehaviour {
         float normalizedSpeed = Mathf.Clamp01(Mathf.Abs(carSpeed) / carTopSpeed);
         float desiredWheelAngle = steerCurve.Evaluate(normalizedSpeed) * steerInputNormalized * maxSteeringAngle;
 
+        currentWheelAngle += desiredWheelAngle;
+        currentWheelAngle = Mathf.Clamp(currentWheelAngle, -maxSteeringAngle, maxSteeringAngle);
 
         //// correction
         //float steeringCorrection = 0.9f;
@@ -90,9 +120,7 @@ public class CarController : MonoBehaviour {
         //wheelsAngle += sideVelocity * steeringCorrection;
 
         foreach (Transform tireTransform in tireToSteerTransformList) {
-            //currentWheelAngle = Mathf.Lerp(currentWheelAngle, desiredWheelAngle, steerSpeed * Time.deltaTime);
-            //tireTransform.localEulerAngles = new Vector3(0, currentWheelAngle, 0);
-            tireTransform.localEulerAngles = new Vector3(0, desiredWheelAngle, 0);
+            tireTransform.localEulerAngles = new Vector3(0, currentWheelAngle, 0);
         }
     }
 
@@ -114,7 +142,7 @@ public class CarController : MonoBehaviour {
                 Vector3 forwardByNormal = Vector3.Dot(tireTransform.forward, Vector3.Cross(tireTransform.right, tireRay.normal).normalized) * Vector3.Cross(tireTransform.right, tireRay.normal).normalized;
 
                 Vector3 tireForwardVelocity = Vector3.Dot(body.GetPointVelocity(tireTransform.position), forwardByNormal) * forwardByNormal;
-                
+
 
                 float forceToApply = 0;
                 float directionOfForce = 0;
@@ -126,11 +154,11 @@ public class CarController : MonoBehaviour {
                 else {
                     // acceletating or decelerating
                     float throtleToApply = acceleration * powerCurve.Evaluate(Mathf.Clamp01(Mathf.Abs(Vector3.Dot(transform.forward, body.velocity)) / carTopSpeed));
-                
+
                     forceToApply = Vector3.Dot(forwardByNormal * throttleInputNormalized, tireForwardVelocity) > 0 ? throtleToApply : deceleration;
                     directionOfForce = throttleInputNormalized;
                 }
-                 
+
 
                 body.AddForceAtPosition(forwardByNormal * directionOfForce * forceToApply / tireToApplyAccelerationForceTransformList.Count * Time.fixedDeltaTime, tireRay.point);
             }
@@ -144,7 +172,7 @@ public class CarController : MonoBehaviour {
 
                 Vector3 sideVelocity = velocityRightComponent * body.mass / tireTransformList.Count * (springDistance - tireRay.distance);
 
-                    body.AddForceAtPosition(-sideVelocity * tireFriction * Time.fixedDeltaTime, tireRay.point);
+                body.AddForceAtPosition(-sideVelocity * tireFriction * Time.fixedDeltaTime, tireRay.point);
 
 
                 //Debug.Log("sideVelocity.magnitude: " + sideVelocity.magnitude);
@@ -213,13 +241,69 @@ public class CarController : MonoBehaviour {
     }
 
 
-
-
-
-
     [ExecuteInEditMode]
     private void OnDrawGizmos() {
         UpdateTireVisual();
+
+        if (body == null) return;
+        Gizmos.color = Color.green;
+        Gizmos.DrawSphere(nextWayPoint(), 0.3f);
     }
+
+
+    private List<Vector3> roadPath = new List<Vector3> {
+        new Vector3(0,0,0),
+        new Vector3(0,0,1),
+        new Vector3(0,0,2),
+        new Vector3(0,0,3),
+        new Vector3(0,0,4),
+
+        new Vector3(1,0,4),
+        new Vector3(2,0,4),
+        new Vector3(3,0,4),
+        new Vector3(4,0,4),
+
+        new Vector3(5,0,5),
+        new Vector3(5,0,6),
+
+        new Vector3(6,0,6),
+        new Vector3(7,0,6),
+        new Vector3(7,0,7),
+        new Vector3(8,0,7),
+        new Vector3(9,0,7),
+        new Vector3(10,0,7),
+
+        new Vector3(10,0,4),
+        new Vector3(10,0,0),
+        new Vector3(4,0,0),
+        new Vector3(0,0,0),
+    };
+    private int currentWayPoint;
+
+
+
+
+    private Vector3 nextWayPoint() {
+        if (roadPath.Count == 0) return transform.forward;
+
+        currentWayPoint = Mathf.Min(currentWayPoint, roadPath.Count - 1);
+
+        int smoothing = 1 + (int)body.velocity.magnitude / 5;
+        Vector3 pointToGo = Vector3.zero;
+        for (int i = 0; i < smoothing; i++) {
+            pointToGo += roadPath[Mathf.Min(currentWayPoint + i, roadPath.Count - 1)];
+        }
+        pointToGo /= smoothing;
+
+        if ((pointToGo - transform.position).magnitude < 1f) {
+            //Debug.Log("got here");
+            if (roadPath.Count - 1 > currentWayPoint) currentWayPoint++;
+            currentWayPoint %= roadPath.Count - 1;
+        }
+
+        return pointToGo;
+    }
+
+
 
 }

@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu]
-public class VoxelSO : ScriptableObject {
+public class VoxelsSO : ScriptableObject {
 
-    public List<Transform> voxelPrefabsList;
+    public List<Voxel> voxelPrefabsList;
 
 
     public Transform GetVoxelPrefabByType(Voxel.Type type) {
-        return voxelPrefabsList[(int)type];
+        return voxelPrefabsList[(int)type].transform;
     }
 
 }

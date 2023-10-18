@@ -469,9 +469,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d8a84b3f67718234ead5fa1c9c9745f9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  voxelSO: {fileID: 11400000, guid: b45deaa444cac334c8d22339f28393f7, type: 2}
-  voxelsHolder: {fileID: 485007964}
   fileName: 
+  voxelsSO: {fileID: 11400000, guid: b45deaa444cac334c8d22339f28393f7, type: 2}
+  voxelsHolder: {fileID: 485007964}
+  carsSO: {fileID: 0}
 --- !u!4 &629570149
 Transform:
   m_ObjectHideFlags: 0
@@ -656,6 +657,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0f6c45f36fe24d24a84b0a32699c9eee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  fileName: 
 --- !u!4 &1414809787
 Transform:
   m_ObjectHideFlags: 0
@@ -703,9 +705,84 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerCamera: {fileID: 1001191757716676223}
-  moveSpeed: 10
   lookSensitivity: 0.2
-  cameraDistanceChenge: 2
+  moveSpeed: 130
+  moveSpeedCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0.04955947
+      inSlope: 2
+      outSlope: 2
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  cameraDistanceChenge: 10
+  cameraDictanceChengeCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0.049987793
+      inSlope: 2
+      outSlope: 2
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  zoomSpeed: 1
+  zoomTilt: 10
+  applyZoomTiltSinseDistance: 10
+  zoomTiltCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: -2.9159331
+      outSlope: -2.9159331
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.053254433
+    - serializedVersion: 3
+      time: 1
+      value: -0.0000010728836
+      inSlope: -0.058391377
+      outSlope: -0.058391377
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.15088767
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!4 &1614013579
 Transform:
   m_ObjectHideFlags: 0
@@ -1209,6 +1286,7 @@ MonoBehaviour:
     m_RotationOrder: 4
   maxSteeringAngle: 60
   steerSpeed: 40
+  type: 0
 --- !u!20 &1001191757716676223
 Camera:
   m_ObjectHideFlags: 0
@@ -2269,6 +2347,31 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 668fd8aabdd97284d84b701af21cc643, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  roadPath:
+  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 0, z: 1}
+  - {x: 0, y: 0, z: 2}
+  - {x: 0, y: 0, z: 3}
+  - {x: 0, y: 0, z: 4}
+  - {x: 1, y: 0, z: 4}
+  - {x: 2, y: 0, z: 4}
+  - {x: 3, y: 0, z: 4}
+  - {x: 4, y: 0, z: 4}
+  - {x: 5, y: 0, z: 5}
+  - {x: 5, y: 0, z: 6}
+  - {x: 6, y: 0, z: 6}
+  - {x: 7, y: 0, z: 6}
+  - {x: 7, y: 0, z: 7}
+  - {x: 8, y: 0, z: 7}
+  - {x: 9, y: 0, z: 7}
+  - {x: 10, y: 0, z: 7}
+  - {x: 10, y: 0, z: 4}
+  - {x: 10, y: 0, z: 0}
+  - {x: 4, y: 0, z: 0}
+  - {x: 0, y: 0, z: 0}
+  currentWayPoint: 0
+  carController: {fileID: 0}
+  body: {fileID: 0}
 --- !u!33 &6111081509714265413
 MeshFilter:
   m_ObjectHideFlags: 0

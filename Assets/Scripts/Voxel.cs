@@ -15,22 +15,20 @@ public class Voxel : MonoBehaviour {
 
 
 
-    private void Awake() {
-
-    }
 
     private void Start() {
-        Map.Instrance.OnDeleteVoxels += Map_OnDeleteVoxels;
+        Level.Instrance.OnDeleteVoxels += Map_OnDeleteVoxels;
     }
 
     private void Map_OnDeleteVoxels() {
         DestroySelf();
     }
     public void DestroySelf() {
-        Map.Instrance.OnDeleteVoxels -= Map_OnDeleteVoxels;
+        Level.Instrance.OnDeleteVoxels -= Map_OnDeleteVoxels;
 
         Destroy(gameObject);
     }
+
 
 
 
