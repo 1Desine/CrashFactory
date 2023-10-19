@@ -54,7 +54,6 @@ public class Car : MonoBehaviour {
 
 
 
-    [SerializeField]
     public class CarInfo {
         public Vector3 position;
         public Quaternion rotation;
@@ -157,7 +156,7 @@ public class Car : MonoBehaviour {
                 // auto decelerating
                 if (throttleInputNormalized == 0) {
                     forceToApply = autoDecelerationForce;
-                    if (tireForwardVelocity.magnitude > 0.1f) directionOfForce = Vector3.Dot(forwardByNormal, tireForwardVelocity) > 0 ? -1 : 1;
+                     directionOfForce = Vector3.Dot(forwardByNormal, tireForwardVelocity) > 0 ? -1 : 1;
                 }
                 else {
                     // acceletating or decelerating

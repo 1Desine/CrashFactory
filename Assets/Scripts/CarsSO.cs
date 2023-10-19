@@ -5,7 +5,7 @@ using UnityEngine;
 [CreateAssetMenu]
 public class CarsSO : ScriptableObject {
 
-    [SerializeField] private List<Car> carsList;
+    public List<Car> carsList;
 
 
 

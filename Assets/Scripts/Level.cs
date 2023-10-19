@@ -5,9 +5,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
-using Unity.VisualScripting;
 using System.Collections;
-using UnityEngine.InputSystem;
 
 public class Level : MonoBehaviour {
     public static Level Instrance { get; private set; }
@@ -19,9 +17,12 @@ public class Level : MonoBehaviour {
     [SerializeField] private VoxelsSO voxelsSO;
     [SerializeField] private Transform solidVoxelsHolder;
     [SerializeField] private Transform roadVoxelsHolder;
-    [SerializeField] private Transform carHolder;
 
     [SerializeField] private CarsSO carsSO;
+    [SerializeField] private Transform carHolder;
+
+    [SerializeField] private BuildingsSO buildingsSO;
+    [SerializeField] private Transform buildingHolder;
 
 
 
@@ -32,6 +33,7 @@ public class Level : MonoBehaviour {
 
     private Dictionary<Vector3Int, Voxel> voxelsDictionary;
     private List<Car> carsList = new List<Car>();
+    private List<Building> buildingsList = new List<Building>();
 
 
     private void Awake() {
@@ -61,6 +63,10 @@ public class Level : MonoBehaviour {
         public List<Quaternion> carsRotations = new List<Quaternion>(); //road
         public List<Car.Type> carsTypes = new List<Car.Type>(); //road
 
+        // Buildings
+        public List<Vector3> buildingsPositions = new List<Vector3>(); //road
+        public List<Quaternion> buildingsRotations = new List<Quaternion>(); //road
+        public List<Building.Type> buildingsTypes = new List<Building.Type>(); //road
 
     }
 
@@ -79,12 +85,21 @@ public class Level : MonoBehaviour {
                 LevelInfo.roadVoxelsPositions.Add(Vector3Int.RoundToInt(voxel.Value.transform.position));
             }
         }
+
         // Cars
         foreach (Car car in carsList) {
             Car.CarInfo carInfo = car.GetCarInfo();
             LevelInfo.carsPositions.Add(carInfo.position);
             LevelInfo.carsRotations.Add(carInfo.rotation);
             LevelInfo.carsTypes.Add(carInfo.type);
+        }
+
+        // Buildings
+        foreach (Building building in buildingsList) {
+            Building.BuildingInfo buildingInfo = building.GetBuildingInfo();
+            LevelInfo.buildingsPositions.Add(buildingInfo.position);
+            LevelInfo.buildingsRotations.Add(buildingInfo.rotation);
+            LevelInfo.buildingsTypes.Add(buildingInfo.type);
         }
 
         SaveSystem.WriteJson(SAVES_PATH + fileName, SaveSystem.SerializeJson(LevelInfo));
@@ -111,6 +126,7 @@ public class Level : MonoBehaviour {
 
             voxelsDictionary.Add(LevelInfo.roadVoxelsPositions[i], newVoxel);
         }
+
         // Cars
         carsList.Clear();
         for (int i = 0; i < LevelInfo.carsTypes.Count; i++) {
@@ -118,6 +134,15 @@ public class Level : MonoBehaviour {
             newCar.transform.position = LevelInfo.carsPositions[i];
             newCar.transform.rotation = LevelInfo.carsRotations[i];
         }
+
+        // Buildings
+        buildingsList.Clear();
+        for (int i = 0; i < LevelInfo.buildingsTypes.Count; i++) {
+            Building newBuilding = Instantiate(buildingsSO.GetBuildingByType(LevelInfo.buildingsTypes[i]), buildingHolder);
+            newBuilding.transform.position = LevelInfo.buildingsPositions[i];
+            newBuilding.transform.rotation = LevelInfo.buildingsRotations[i];
+        }
+
 
     }
 
@@ -154,12 +179,12 @@ public class Level : MonoBehaviour {
         voxelFromDictionary.DestroySelf();
         voxelsDictionary.Remove(position);
     }
-    public void RegisterCar(Car car) {
-        carsList.Add(car);
-    }
-    public void UnregisterCar(Car car) {
-        carsList.Remove(car);
-    }
+
+    public void RegisterCar(Car car) => carsList.Add(car);
+    public void UnregisterCar(Car car) => carsList.Remove(car);
+
+    public void RegisterBuilding(Building building) => buildingsList.Add(building);
+    public void UnregisterBuilding(Building building) => buildingsList.Remove(building);
 
 
 
