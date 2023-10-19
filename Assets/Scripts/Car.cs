@@ -71,8 +71,7 @@ public class Car : MonoBehaviour {
     }
 
     private void Update() {
-        Vector2 currentWayPoint = GetCurrentWayPoint();
-        Agent_Steer(Vector3.SignedAngle(transform.forward, new Vector3(currentWayPoint.x, 0, currentWayPoint.y) - transform.position + transform.forward * rearAxilOffset, Vector3.up));
+        Agent_Steer(Vector3.SignedAngle(transform.forward, GetCurrentWayPoint() - transform.position + transform.forward * rearAxilOffset, Vector3.up));
 
 
         //HandleSteering();
@@ -176,9 +175,8 @@ public class Car : MonoBehaviour {
                 body.AddForceAtPosition(-sideVelocity * tireFriction * Time.fixedDeltaTime, tireRay.point);
 
 
-                //Debug.Log("sideVelocity.magnitude: " + sideVelocity.magnitude);
                 Debug.DrawRay(tireRay.point + tireTransform.up, sideVelocity * 10, Color.red);
-                Debug.DrawRay(tireRay.point + tireTransform.up, Vector3.Cross(tireTransform.right, tireRay.normal) * 10, Color.blue);
+                Debug.DrawRay(tireRay.point + tireTransform.up, Vector3.Cross(tireTransform.right, tireRay.normal) / 2, Color.blue);
             }
         }
     }
@@ -231,56 +229,56 @@ public class Car : MonoBehaviour {
         if (body == null) return;
         Gizmos.color = Color.green;
 
-        Vector2 currentWayPoint = GetCurrentWayPoint();
+        Vector3 currentWayPoint = GetCurrentWayPoint();
         Gizmos.DrawSphere(new Vector3(currentWayPoint.x, 0, currentWayPoint.y), 0.3f);
     }
 
 
-    private List<Vector2> roadPath = new List<Vector2> {
-        new Vector2(0,0),
-        new Vector2(0,1),
-        new Vector2(0,2),
-        new Vector2(0,3),
-        new Vector2(0,4),
-
-        new Vector2(1,4),
-        new Vector2(2,4),
-        new Vector2(3,4),
-        new Vector2(4,4),
-
-        new Vector2(5,5),
-        new Vector2(5,6),
-
-        new Vector2(6,6),
-        new Vector2(7,6),
-        new Vector2(7,7),
-        new Vector2(8,7),
-        new Vector2(9,7),
-        new Vector2(10,7),
-
-        new Vector2(10,4),
-        new Vector2(10,0),
-        new Vector2(4,0),
-        new Vector2(0,0),
+    private List<Vector3> roadPath = new List<Vector3> {
+        new Vector3(0,0,0),
+        new Vector3(0,0,1),
+        new Vector3(0,0,2),
+        new Vector3(0,0,3),
+        new Vector3(0,0,4),
+                  
+        new Vector3(1,0,4),
+        new Vector3(2,0,4),
+        new Vector3(3,0,4),
+        new Vector3(4,0,4),
+                  
+        new Vector3(5,0,5),
+        new Vector3(5,0,6),
+                  
+        new Vector3(6,0,6),
+        new Vector3(7,0,6),
+        new Vector3(7,0,7),
+        new Vector3(8,0,7),
+        new Vector3(9,0,7),
+        new Vector3(10,0,7),
+                  
+        new Vector3(10,0,4),
+        new Vector3(10,0,0),
+        new Vector3(4,0,0),
+        new Vector3(0,0,0),
     };
     private int currentWayPoint;
 
 
 
 
-    private Vector2 GetCurrentWayPoint() {
+    private Vector3 GetCurrentWayPoint() {
         if (roadPath.Count == 0) return transform.forward;
 
         currentWayPoint = Mathf.Min(currentWayPoint, roadPath.Count - 1);
 
         int smoothing = 1 + (int)body.velocity.magnitude / 5;
-        Vector2 pointToGo = Vector2.zero;
+        Vector3 pointToGo = Vector3.zero;
         for (int i = 0; i < smoothing; i++) {
             pointToGo += roadPath[Mathf.Min(currentWayPoint + i, roadPath.Count - 1)];
         }
         pointToGo /= smoothing;
 
-        if (new Vector2(pointToGo.x - transform.position.x, pointToGo.y - transform.position.z).magnitude < 1f) {
+        if ((pointToGo- transform.position).magnitude < 1f) {
             //Debug.Log("got here");
             if (roadPath.Count - 1 > currentWayPoint) currentWayPoint++;
             currentWayPoint %= roadPath.Count - 1;
