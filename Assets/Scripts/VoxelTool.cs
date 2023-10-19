@@ -12,6 +12,7 @@ public class VoxelTool : MonoBehaviour {
     private VoxelType currentBrush;
 
     public enum VoxelType {
+        Doser,
         Solid,
         Road,
     }
@@ -20,7 +21,7 @@ public class VoxelTool : MonoBehaviour {
         Instance = this;
 
         toolIsActive = false;
-        currentBrush = VoxelType.Solid;
+        currentBrush = VoxelType.Doser;
     }
 
 
@@ -34,7 +35,7 @@ public class VoxelTool : MonoBehaviour {
 
         if (Input.GetKeyDown(KeyCode.B)) {
             currentBrush++;
-            if ((int)currentBrush > 1) currentBrush = 0;
+            if ((int)currentBrush > 2) currentBrush = 0;
             OnSetBrush?.Invoke(currentBrush);
         }
 
@@ -54,17 +55,21 @@ public class VoxelTool : MonoBehaviour {
                     Mathf.Round(voxel.transform.position.y),
                     Mathf.Round(voxel.transform.position.z));
 
-                cellPosition += hit.normal;
-                Debug.DrawLine(voxel.transform.position, cellPosition, Color.green);
-
-
-                if (Input.GetMouseButtonDown(1)) {
-                    Level.Instrance.TryRemoveVoxel(voxel.transform.position);
-                }
+                Debug.DrawLine(voxel.transform.position, cellPosition + hit.normal, Color.green);
             }
 
-            if (Input.GetMouseButtonDown(0)) {
-                Level.Instrance.TryAddVoxel(currentBrush.ToString(), cellPosition);
+            if (GameInput.Instance.GetMainActionButtonDown()) {
+                switch (currentBrush) {
+                    case VoxelType.Doser: {
+                        if (voxel == null) break;
+                        Level.Instrance.TryRemoveVoxel(voxel.transform.position);
+                        break;
+                    }
+                    case VoxelType.Solid:
+                    case VoxelType.Road:
+                    Level.Instrance.TryAddVoxel(currentBrush.ToString(), cellPosition + hit.normal);
+                    break;
+                }
             }
 
 

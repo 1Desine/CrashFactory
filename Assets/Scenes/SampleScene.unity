@@ -559,17 +559,17 @@ MonoBehaviour:
     - serializedVersion: 3
       time: 0
       value: 1
-      inSlope: -0.49889874
-      outSlope: -0.49889874
+      inSlope: -0.9499943
+      outSlope: -0.9499943
       tangentMode: 34
       weightedMode: 0
       inWeight: 0
       outWeight: 0.33333334
     - serializedVersion: 3
       time: 1
-      value: 0.50110126
-      inSlope: -0.49889874
-      outSlope: -0.49889874
+      value: 0.050005674
+      inSlope: -0.9499943
+      outSlope: -0.9499943
       tangentMode: 34
       weightedMode: 0
       inWeight: 0.33333334
@@ -578,7 +578,7 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   maxSteeringAngle: 60
-  steerSpeed: 40
+  steerSpeed: 500
   type: 0
 --- !u!1 &193886917
 GameObject:
@@ -930,17 +930,17 @@ MonoBehaviour:
     - serializedVersion: 3
       time: 0
       value: 1
-      inSlope: -0.49889874
-      outSlope: -0.49889874
+      inSlope: -0.9499943
+      outSlope: -0.9499943
       tangentMode: 34
       weightedMode: 0
       inWeight: 0
       outWeight: 0.33333334
     - serializedVersion: 3
       time: 1
-      value: 0.50110126
-      inSlope: -0.49889874
-      outSlope: -0.49889874
+      value: 0.050005674
+      inSlope: -0.9499943
+      outSlope: -0.9499943
       tangentMode: 34
       weightedMode: 0
       inWeight: 0.33333334
@@ -949,7 +949,7 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   maxSteeringAngle: 60
-  steerSpeed: 40
+  steerSpeed: 500
   type: 0
 --- !u!1 &365754766
 GameObject:
@@ -3325,17 +3325,17 @@ MonoBehaviour:
     - serializedVersion: 3
       time: 0
       value: 1
-      inSlope: -0.49889874
-      outSlope: -0.49889874
+      inSlope: -0.9499943
+      outSlope: -0.9499943
       tangentMode: 34
       weightedMode: 0
       inWeight: 0
       outWeight: 0.33333334
     - serializedVersion: 3
       time: 1
-      value: 0.50110126
-      inSlope: -0.49889874
-      outSlope: -0.49889874
+      value: 0.050005674
+      inSlope: -0.9499943
+      outSlope: -0.9499943
       tangentMode: 34
       weightedMode: 0
       inWeight: 0.33333334
@@ -3344,7 +3344,7 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   maxSteeringAngle: 60
-  steerSpeed: 40
+  steerSpeed: 500
   type: 0
 --- !u!1 &1957599724
 GameObject:
@@ -3948,17 +3948,17 @@ MonoBehaviour:
     - serializedVersion: 3
       time: 0
       value: 1
-      inSlope: -0.49889874
-      outSlope: -0.49889874
+      inSlope: -0.9499943
+      outSlope: -0.9499943
       tangentMode: 34
       weightedMode: 0
       inWeight: 0
       outWeight: 0.33333334
     - serializedVersion: 3
       time: 1
-      value: 0.50110126
-      inSlope: -0.49889874
-      outSlope: -0.49889874
+      value: 0.050005674
+      inSlope: -0.9499943
+      outSlope: -0.9499943
       tangentMode: 34
       weightedMode: 0
       inWeight: 0.33333334
@@ -3967,7 +3967,7 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   maxSteeringAngle: 60
-  steerSpeed: 40
+  steerSpeed: 500
   type: 0
 --- !u!20 &1001191757716676223
 Camera:

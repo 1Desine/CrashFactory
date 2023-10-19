@@ -71,10 +71,12 @@ public class Car : MonoBehaviour {
     }
 
     private void Update() {
-        Agent_Steer(Vector3.SignedAngle(transform.forward, GetCurrentWayPoint() - transform.position + transform.forward * rearAxilOffset, Vector3.up));
+        AgentControl();
 
 
-        //HandleSteering();
+
+
+        //Steer(Input.GetAxis("Horizontal") * maxSteeringAngle);
         UpdateTireVisual();
 
 
@@ -92,26 +94,12 @@ public class Car : MonoBehaviour {
         HandleAccelerationAndDeceleration();
     }
 
-    private void HandleSteering() {
-        float steerInputNormalized = 0f;
-
-        if (Input.GetKey(KeyCode.A)) {
-            steerInputNormalized--;
-        }
-        if (Input.GetKey(KeyCode.D)) {
-            steerInputNormalized++;
-        }
-        // straightning
-        if (steerInputNormalized == 0) {
-            currentWheelAngle -= currentWheelAngle / 2 * Time.deltaTime;
-        }
-
-
+    private void Steer(float desiredSteerAngle) {
         float carSpeed = Vector3.Dot(transform.forward, body.velocity);
-        float normalizedSpeed = Mathf.Clamp01(Mathf.Abs(carSpeed) / carTopSpeed);
-        float desiredWheelAngle = steerCurve.Evaluate(normalizedSpeed) * steerInputNormalized * maxSteeringAngle;
+        float speed01 = Mathf.Clamp01(Mathf.Abs(carSpeed) / carTopSpeed);
+        float steeringSpeed = steerCurve.Evaluate(speed01);
 
-        currentWheelAngle += desiredWheelAngle;
+        currentWheelAngle += Mathf.Clamp(desiredSteerAngle - currentWheelAngle, -steeringSpeed, steeringSpeed) * steerSpeed * Time.deltaTime;
         currentWheelAngle = Mathf.Clamp(currentWheelAngle, -maxSteeringAngle, maxSteeringAngle);
 
         //// correction
@@ -266,6 +254,9 @@ public class Car : MonoBehaviour {
 
 
 
+    private void AgentControl() {
+        Steer(Vector3.SignedAngle(transform.forward, GetCurrentWayPoint() - transform.position + transform.forward * rearAxilOffset, Vector3.up));
+    }
     private Vector3 GetCurrentWayPoint() {
         if (roadPath.Count == 0) return transform.forward;
 
@@ -288,23 +279,5 @@ public class Car : MonoBehaviour {
     }
 
 
-    public void Agent_Steer(float steeringAngle) {
-        steeringAngle = Mathf.Clamp(steeringAngle, -maxSteeringAngle, maxSteeringAngle);
-
-        float carSpeed = Vector3.Dot(transform.forward, body.velocity);
-        float normalizedSpeed = Mathf.Clamp01(Mathf.Abs(carSpeed) / carTopSpeed);
-        float desiredWheelAngle = steerCurve.Evaluate(normalizedSpeed) * steeringAngle;
-
-
-        //// correction
-        //float steeringCorrection = 0.9f;
-        //float sideVelocity = Vector3.Dot(transform.right, body.velocity);
-        //wheelsAngle += sideVelocity * steeringCorrection;
-
-        foreach (Transform tireTransform in tireToSteerTransformList) {
-            currentWheelAngle = Mathf.Lerp(currentWheelAngle, desiredWheelAngle, steerSpeed * Time.deltaTime);
-            tireTransform.localEulerAngles = new Vector3(0, currentWheelAngle, 0);
-        }
-    }
 
 }

@@ -28,16 +28,16 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
             ""id"": ""146c14b4-62ad-49e8-9287-3fe0904871c7"",
             ""actions"": [
                 {
-                    ""name"": ""Move"",
+                    ""name"": ""MoveVector3"",
                     ""type"": ""Value"",
                     ""id"": ""e6ecd8fc-3e0b-47ef-93fb-adb8831c5b0d"",
-                    ""expectedControlType"": ""Vector2"",
+                    ""expectedControlType"": ""Vector3"",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
                 },
                 {
-                    ""name"": ""Look"",
+                    ""name"": ""LookVector2"",
                     ""type"": ""Value"",
                     ""id"": ""99044d53-ad1f-44b9-a6ae-f0b3c712c4ee"",
                     ""expectedControlType"": ""Vector2"",
@@ -46,7 +46,25 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": true
                 },
                 {
-                    ""name"": ""MoveAndLook"",
+                    ""name"": ""MainActionButton"",
+                    ""type"": ""Button"",
+                    ""id"": ""751bb9fb-273e-47e3-831d-c27038f354e0"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SecondaryActionButton"",
+                    ""type"": ""Button"",
+                    ""id"": ""1d4f85c2-d357-4900-8d7a-850b093f7d79"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""PivotAroundPointButton"",
                     ""type"": ""Button"",
                     ""id"": ""16e6f509-8113-44e6-a89b-cec54e5d36b4"",
                     ""expectedControlType"": ""Button"",
@@ -55,77 +73,90 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""CameraHeight"",
+                    ""name"": ""CameraZoomFloat"",
                     ""type"": ""Value"",
                     ""id"": ""745eacf9-40d8-40d1-9a06-f8f00e932991"",
                     ""expectedControlType"": ""Axis"",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
-                },
-                {
-                    ""name"": ""FreeCamera"",
-                    ""type"": ""Button"",
-                    ""id"": ""1d4f85c2-d357-4900-8d7a-850b093f7d79"",
-                    ""expectedControlType"": ""Button"",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
                 {
-                    ""name"": ""2D Vector"",
-                    ""id"": ""b7098dde-a0cf-474c-88a8-b292f622b0ef"",
-                    ""path"": ""2DVector"",
+                    ""name"": ""3D Vector"",
+                    ""id"": ""b3ee6c87-20c8-4cd8-a585-aba7b1f42df4"",
+                    ""path"": ""3DVector"",
                     ""interactions"": """",
-                    ""processors"": """",
+                    ""processors"": ""NormalizeVector3"",
                     ""groups"": """",
-                    ""action"": ""Move"",
+                    ""action"": ""MoveVector3"",
                     ""isComposite"": true,
                     ""isPartOfComposite"": false
                 },
                 {
                     ""name"": ""up"",
-                    ""id"": ""3b648c7d-db64-49ee-bb3b-598df3d2f122"",
-                    ""path"": ""<Keyboard>/w"",
+                    ""id"": ""af2464f8-8fd0-4dec-849f-b13c71c3e627"",
+                    ""path"": ""<Keyboard>/e"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Move"",
+                    ""action"": ""MoveVector3"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
                 },
                 {
                     ""name"": ""down"",
-                    ""id"": ""44a16daa-975f-4231-b17e-66f636dd4568"",
-                    ""path"": ""<Keyboard>/s"",
+                    ""id"": ""2689db17-f4a5-45db-a723-3bebf453a86f"",
+                    ""path"": ""<Keyboard>/q"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Move"",
+                    ""action"": ""MoveVector3"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
                 },
                 {
                     ""name"": ""left"",
-                    ""id"": ""a3d31d8f-4962-4d6e-a045-88ccdc9fd59e"",
+                    ""id"": ""e1926ee7-7ecf-40dc-8634-d0d819d7a31e"",
                     ""path"": ""<Keyboard>/a"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Move"",
+                    ""action"": ""MoveVector3"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
                 },
                 {
                     ""name"": ""right"",
-                    ""id"": ""24226f0c-1545-4cac-b3f4-8c6543d71e96"",
+                    ""id"": ""4015abcf-a3cb-4cae-8fe2-3fda32778fe9"",
                     ""path"": ""<Keyboard>/d"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Move"",
+                    ""action"": ""MoveVector3"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""forward"",
+                    ""id"": ""3e5f3d36-2992-4bfe-9ecf-01d759edb36f"",
+                    ""path"": ""<Keyboard>/w"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""MoveVector3"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""backward"",
+                    ""id"": ""85c84dc7-06cd-4481-91fb-728950a06eb7"",
+                    ""path"": ""<Keyboard>/s"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""MoveVector3"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
                 },
@@ -136,7 +167,7 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Look"",
+                    ""action"": ""LookVector2"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -147,7 +178,7 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""MoveAndLook"",
+                    ""action"": ""PivotAroundPointButton"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -158,7 +189,18 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""CameraHeight"",
+                    ""action"": ""CameraZoomFloat"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""ce92526e-11cd-4a13-bb62-2df33292aa31"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""MainActionButton"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -169,7 +211,7 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""FreeCamera"",
+                    ""action"": ""SecondaryActionButton"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -180,11 +222,12 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
 }");
         // Player
         m_Player = asset.FindActionMap("Player", throwIfNotFound: true);
-        m_Player_Move = m_Player.FindAction("Move", throwIfNotFound: true);
-        m_Player_Look = m_Player.FindAction("Look", throwIfNotFound: true);
-        m_Player_MoveAndLook = m_Player.FindAction("MoveAndLook", throwIfNotFound: true);
-        m_Player_CameraHeight = m_Player.FindAction("CameraHeight", throwIfNotFound: true);
-        m_Player_FreeCamera = m_Player.FindAction("FreeCamera", throwIfNotFound: true);
+        m_Player_MoveVector3 = m_Player.FindAction("MoveVector3", throwIfNotFound: true);
+        m_Player_LookVector2 = m_Player.FindAction("LookVector2", throwIfNotFound: true);
+        m_Player_MainActionButton = m_Player.FindAction("MainActionButton", throwIfNotFound: true);
+        m_Player_SecondaryActionButton = m_Player.FindAction("SecondaryActionButton", throwIfNotFound: true);
+        m_Player_PivotAroundPointButton = m_Player.FindAction("PivotAroundPointButton", throwIfNotFound: true);
+        m_Player_CameraZoomFloat = m_Player.FindAction("CameraZoomFloat", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -246,20 +289,22 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
     // Player
     private readonly InputActionMap m_Player;
     private List<IPlayerActions> m_PlayerActionsCallbackInterfaces = new List<IPlayerActions>();
-    private readonly InputAction m_Player_Move;
-    private readonly InputAction m_Player_Look;
-    private readonly InputAction m_Player_MoveAndLook;
-    private readonly InputAction m_Player_CameraHeight;
-    private readonly InputAction m_Player_FreeCamera;
+    private readonly InputAction m_Player_MoveVector3;
+    private readonly InputAction m_Player_LookVector2;
+    private readonly InputAction m_Player_MainActionButton;
+    private readonly InputAction m_Player_SecondaryActionButton;
+    private readonly InputAction m_Player_PivotAroundPointButton;
+    private readonly InputAction m_Player_CameraZoomFloat;
     public struct PlayerActions
     {
         private @PlayerInputAction m_Wrapper;
         public PlayerActions(@PlayerInputAction wrapper) { m_Wrapper = wrapper; }
-        public InputAction @Move => m_Wrapper.m_Player_Move;
-        public InputAction @Look => m_Wrapper.m_Player_Look;
-        public InputAction @MoveAndLook => m_Wrapper.m_Player_MoveAndLook;
-        public InputAction @CameraHeight => m_Wrapper.m_Player_CameraHeight;
-        public InputAction @FreeCamera => m_Wrapper.m_Player_FreeCamera;
+        public InputAction @MoveVector3 => m_Wrapper.m_Player_MoveVector3;
+        public InputAction @LookVector2 => m_Wrapper.m_Player_LookVector2;
+        public InputAction @MainActionButton => m_Wrapper.m_Player_MainActionButton;
+        public InputAction @SecondaryActionButton => m_Wrapper.m_Player_SecondaryActionButton;
+        public InputAction @PivotAroundPointButton => m_Wrapper.m_Player_PivotAroundPointButton;
+        public InputAction @CameraZoomFloat => m_Wrapper.m_Player_CameraZoomFloat;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -269,40 +314,46 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
         {
             if (instance == null || m_Wrapper.m_PlayerActionsCallbackInterfaces.Contains(instance)) return;
             m_Wrapper.m_PlayerActionsCallbackInterfaces.Add(instance);
-            @Move.started += instance.OnMove;
-            @Move.performed += instance.OnMove;
-            @Move.canceled += instance.OnMove;
-            @Look.started += instance.OnLook;
-            @Look.performed += instance.OnLook;
-            @Look.canceled += instance.OnLook;
-            @MoveAndLook.started += instance.OnMoveAndLook;
-            @MoveAndLook.performed += instance.OnMoveAndLook;
-            @MoveAndLook.canceled += instance.OnMoveAndLook;
-            @CameraHeight.started += instance.OnCameraHeight;
-            @CameraHeight.performed += instance.OnCameraHeight;
-            @CameraHeight.canceled += instance.OnCameraHeight;
-            @FreeCamera.started += instance.OnFreeCamera;
-            @FreeCamera.performed += instance.OnFreeCamera;
-            @FreeCamera.canceled += instance.OnFreeCamera;
+            @MoveVector3.started += instance.OnMoveVector3;
+            @MoveVector3.performed += instance.OnMoveVector3;
+            @MoveVector3.canceled += instance.OnMoveVector3;
+            @LookVector2.started += instance.OnLookVector2;
+            @LookVector2.performed += instance.OnLookVector2;
+            @LookVector2.canceled += instance.OnLookVector2;
+            @MainActionButton.started += instance.OnMainActionButton;
+            @MainActionButton.performed += instance.OnMainActionButton;
+            @MainActionButton.canceled += instance.OnMainActionButton;
+            @SecondaryActionButton.started += instance.OnSecondaryActionButton;
+            @SecondaryActionButton.performed += instance.OnSecondaryActionButton;
+            @SecondaryActionButton.canceled += instance.OnSecondaryActionButton;
+            @PivotAroundPointButton.started += instance.OnPivotAroundPointButton;
+            @PivotAroundPointButton.performed += instance.OnPivotAroundPointButton;
+            @PivotAroundPointButton.canceled += instance.OnPivotAroundPointButton;
+            @CameraZoomFloat.started += instance.OnCameraZoomFloat;
+            @CameraZoomFloat.performed += instance.OnCameraZoomFloat;
+            @CameraZoomFloat.canceled += instance.OnCameraZoomFloat;
         }
 
         private void UnregisterCallbacks(IPlayerActions instance)
         {
-            @Move.started -= instance.OnMove;
-            @Move.performed -= instance.OnMove;
-            @Move.canceled -= instance.OnMove;
-            @Look.started -= instance.OnLook;
-            @Look.performed -= instance.OnLook;
-            @Look.canceled -= instance.OnLook;
-            @MoveAndLook.started -= instance.OnMoveAndLook;
-            @MoveAndLook.performed -= instance.OnMoveAndLook;
-            @MoveAndLook.canceled -= instance.OnMoveAndLook;
-            @CameraHeight.started -= instance.OnCameraHeight;
-            @CameraHeight.performed -= instance.OnCameraHeight;
-            @CameraHeight.canceled -= instance.OnCameraHeight;
-            @FreeCamera.started -= instance.OnFreeCamera;
-            @FreeCamera.performed -= instance.OnFreeCamera;
-            @FreeCamera.canceled -= instance.OnFreeCamera;
+            @MoveVector3.started -= instance.OnMoveVector3;
+            @MoveVector3.performed -= instance.OnMoveVector3;
+            @MoveVector3.canceled -= instance.OnMoveVector3;
+            @LookVector2.started -= instance.OnLookVector2;
+            @LookVector2.performed -= instance.OnLookVector2;
+            @LookVector2.canceled -= instance.OnLookVector2;
+            @MainActionButton.started -= instance.OnMainActionButton;
+            @MainActionButton.performed -= instance.OnMainActionButton;
+            @MainActionButton.canceled -= instance.OnMainActionButton;
+            @SecondaryActionButton.started -= instance.OnSecondaryActionButton;
+            @SecondaryActionButton.performed -= instance.OnSecondaryActionButton;
+            @SecondaryActionButton.canceled -= instance.OnSecondaryActionButton;
+            @PivotAroundPointButton.started -= instance.OnPivotAroundPointButton;
+            @PivotAroundPointButton.performed -= instance.OnPivotAroundPointButton;
+            @PivotAroundPointButton.canceled -= instance.OnPivotAroundPointButton;
+            @CameraZoomFloat.started -= instance.OnCameraZoomFloat;
+            @CameraZoomFloat.performed -= instance.OnCameraZoomFloat;
+            @CameraZoomFloat.canceled -= instance.OnCameraZoomFloat;
         }
 
         public void RemoveCallbacks(IPlayerActions instance)
@@ -322,10 +373,11 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
     public PlayerActions @Player => new PlayerActions(this);
     public interface IPlayerActions
     {
-        void OnMove(InputAction.CallbackContext context);
-        void OnLook(InputAction.CallbackContext context);
-        void OnMoveAndLook(InputAction.CallbackContext context);
-        void OnCameraHeight(InputAction.CallbackContext context);
-        void OnFreeCamera(InputAction.CallbackContext context);
+        void OnMoveVector3(InputAction.CallbackContext context);
+        void OnLookVector2(InputAction.CallbackContext context);
+        void OnMainActionButton(InputAction.CallbackContext context);
+        void OnSecondaryActionButton(InputAction.CallbackContext context);
+        void OnPivotAroundPointButton(InputAction.CallbackContext context);
+        void OnCameraZoomFloat(InputAction.CallbackContext context);
     }
 }

@@ -1,12 +1,12 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class GameInput : MonoBehaviour {
     public static GameInput Instance { get; private set; }
 
     private PlayerInputAction playerInputAction;
+
+
+    private bool previousMainActionButton;
 
 
     private void Awake() {
@@ -17,21 +17,29 @@ public class GameInput : MonoBehaviour {
     }
 
 
-
-    public float GetCameraHightDeltaFloat() {
-        return playerInputAction.Player.CameraHeight.ReadValue<float>();
+    public bool GetMainActionButtonDown() {
+        bool switchedOn = false;
+        if (previousMainActionButton == false && playerInputAction.Player.MainActionButton.IsInProgress()) {
+            switchedOn = true;
+        }
+        previousMainActionButton = playerInputAction.Player.MainActionButton.IsInProgress();
+        return switchedOn;
     }
-    public bool GetFreeCameraButton() {
-        return playerInputAction.Player.FreeCamera.IsInProgress();
+
+    public float GetCameraZoomFloat() {
+        return playerInputAction.Player.CameraZoomFloat.ReadValue<float>();
+    }
+    public bool GetSecondaryActionButton() {
+        return playerInputAction.Player.SecondaryActionButton.IsInProgress();
     }
     public bool GetPivotAroundButton() {
-        return playerInputAction.Player.MoveAndLook.IsInProgress();
+        return playerInputAction.Player.PivotAroundPointButton.IsInProgress();
     }
-    public Vector2 GetMoveVector() {
-        return playerInputAction.Player.Move.ReadValue<Vector2>();
+    public Vector3 GetMoveVector3() {
+        return playerInputAction.Player.MoveVector3.ReadValue<Vector3>();
     }
-    public Vector2 GetLookDeltaVector() {
-        return playerInputAction.Player.Look.ReadValue<Vector2>();
+    public Vector2 GetLookVector2() {
+        return playerInputAction.Player.LookVector2.ReadValue<Vector2>();
     }
 
 

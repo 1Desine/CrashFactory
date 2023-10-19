@@ -6,8 +6,9 @@ using UnityEngine;
 public class Player : MonoBehaviour {
     public static Player Instance { get; private set; }
 
-    [Header("Movement")]
     [SerializeField] private Camera playerCamera;
+
+    [Header("Movement")]
     [SerializeField] private float lookSensitivity = 0.2f;
     [SerializeField] private float moveSpeed = 10f;
     [SerializeField] private AnimationCurve moveSpeedCurve;
@@ -37,16 +38,10 @@ public class Player : MonoBehaviour {
 
         // pivot around 
         if (GameInput.Instance.GetPivotAroundButton()) {
-            RaycastHit hit;
-            Physics.Raycast(ray, out hit);
-
-            if (lookPivotPoint != Vector3.zero) {
-                Vector2 lookInput = GameInput.Instance.GetLookDeltaVector();
-
-                PivotAroundPoint(lookPivotPoint, lookInput * lookSensitivity);
-            }
-            else if (hit.collider != null) {
-                lookPivotPoint = hit.point;
+            if (Physics.Raycast(ray, out RaycastHit hit)) {
+                if (lookPivotPoint != Vector3.zero)
+                    PivotAroundPoint(lookPivotPoint, GameInput.Instance.GetLookVector2() * lookSensitivity);
+                else lookPivotPoint = hit.point;
             }
         }
         else lookPivotPoint = Vector3.zero;
@@ -54,17 +49,12 @@ public class Player : MonoBehaviour {
 
         var hight = transform.position.y;
         // free camera
-        if (GameInput.Instance.GetFreeCameraButton()) {
-            Vector2 moveInput = GameInput.Instance.GetMoveVector();
-            Vector2 lookInput = GameInput.Instance.GetLookDeltaVector();
-
-            transform.position += (transform.right * moveInput.x + transform.forward * moveInput.y) * moveSpeed * moveSpeedCurve.Evaluate(hight / maxHeight) * Time.deltaTime;
-
-            RotatePlayerY_CameraX(lookInput * lookSensitivity);
+        if (GameInput.Instance.GetSecondaryActionButton()) {
+            RotatePlayerY_CameraX(GameInput.Instance.GetLookVector2() * lookSensitivity);
         }
 
         // zoom in and out
-        float zoomInput = GameInput.Instance.GetCameraHightDeltaFloat() * zoomSpeed * Time.deltaTime;
+        float zoomInput = GameInput.Instance.GetCameraZoomFloat() * zoomSpeed * Time.deltaTime;
         if (zoomInput != 0) {
             Vector3 desiredPosition = transform.position + ray.direction * zoomInput * cameraDistanceChenge * cameraDictanceChengeCurve.Evaluate(hight / maxHeight);
 
@@ -78,10 +68,14 @@ public class Player : MonoBehaviour {
                     transform.position = desiredPosition;
 
                 if ((transform.position - hit.point).magnitude < applyZoomYawSinseDistance)
-                if (zoomInput > 0)
-                    RotatePlayerY_CameraX(new Vector2(Vector3.SignedAngle(transform.forward, hit.point - transform.position, Vector3.up) * zoomInput * zoomYaw, 0));
+                    if (zoomInput > 0)
+                        RotatePlayerY_CameraX(new Vector2(Vector3.SignedAngle(transform.forward, hit.point - transform.position, Vector3.up) * zoomInput * zoomYaw, 0));
             }
         }
+
+        Vector3 moveInput = GameInput.Instance.GetMoveVector3();
+        transform.position += (transform.right * moveInput.x + transform.up * moveInput.y + transform.forward * moveInput.z) * moveSpeed * moveSpeedCurve.Evaluate(hight / maxHeight) * Time.deltaTime;
+
 
         // hight check
         if (transform.position.y < minHeight) transform.position = new Vector3(transform.position.x, minHeight, transform.position.z);
