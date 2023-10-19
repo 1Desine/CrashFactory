@@ -29,13 +29,13 @@ public class Level : MonoBehaviour {
     public Action OnDeleteVoxels;
 
 
-    private Dictionary<Vector3, Voxel> voxelsDictionary;
+    private Dictionary<Vector3Int, Voxel> voxelsDictionary;
 
 
     private void Awake() {
         Instrance = this;
 
-        voxelsDictionary = new Dictionary<Vector3, Voxel>();
+        voxelsDictionary = new Dictionary<Vector3Int, Voxel>();
     }
 
     private void Update() {
@@ -47,7 +47,7 @@ public class Level : MonoBehaviour {
         }
 
         if (Input.GetKeyDown(KeyCode.P)) {
-            pathList = GetPathByRoad(Vector3.up, new Vector3(3, 1, 3));
+            pathList = GetPathByRoad(Vector3Int.up, new Vector3Int(3, 1, 3));
         }
     }
 
@@ -59,9 +59,9 @@ public class Level : MonoBehaviour {
 
         // Voxels
         //solid
-        public List<Vector3> solidVoxelsPositions = new List<Vector3>();
+        public List<Vector3Int> solidVoxelsPositions = new List<Vector3Int>();
         //road
-        public List<Vector3> roadVoxelsPositions = new List<Vector3>();
+        public List<Vector3Int> roadVoxelsPositions = new List<Vector3Int>();
 
         // cars
 
@@ -76,11 +76,11 @@ public class Level : MonoBehaviour {
         foreach (var dic in voxelsDictionary) {
             //solid
             if (dic.Value is SolidVoxel solidVoxel) {
-                LevelInfo.solidVoxelsPositions.Add(dic.Value.transform.position);
+                LevelInfo.solidVoxelsPositions.Add(Vector3Int.RoundToInt(dic.Value.transform.position));
             }
             //road
             if (dic.Value is RoadVoxel roadVoxel) {
-                LevelInfo.solidVoxelsPositions.Add(dic.Value.transform.position);
+                LevelInfo.solidVoxelsPositions.Add(Vector3Int.RoundToInt(dic.Value.transform.position));
             }
         }
 
@@ -113,7 +113,7 @@ public class Level : MonoBehaviour {
 
     }
 
-    public void TryAddVoxel(string voxelType, Vector3 position) {
+    public void TryAddVoxel(string voxelType, Vector3Int position) {
         voxelsDictionary.TryGetValue(position, out Voxel voxelFromDictionary);
         if (voxelFromDictionary != null) {
             return;
@@ -140,7 +140,7 @@ public class Level : MonoBehaviour {
         }
 
     }
-    public void TryRemoveVoxel(Vector3 position) {
+    public void TryRemoveVoxel(Vector3Int position) {
         voxelsDictionary.TryGetValue(position, out Voxel voxelFromDictionary);
         if (voxelFromDictionary == null) {
             return;
@@ -151,7 +151,7 @@ public class Level : MonoBehaviour {
 
 
 
-    List<Vector3> pathList = new List<Vector3>();
+    List<Vector3Int> pathList = new List<Vector3Int>();
 
     [ExecuteInEditMode]
     private void OnDrawGizmos() {
@@ -167,21 +167,21 @@ public class Level : MonoBehaviour {
 
 
     private class PathNode {
-        public Vector3 position;
+        public Vector3Int position;
         public float g; // distanceFromStart;
         public float h; // distanceFromEnd;
         public float f { get { return g + h; } }
 
         public PathNode parent;
     }
-    public List<Vector3> GetPathByRoad(Vector3 startPosition, Vector3 endPosition) {
-        PathNode lastPathNode = GetLastNode(startPosition, endPosition);
+    public List<Vector3Int> GetPathByRoad(Vector3Int startPosition, Vector3Int endPosition) {
+        PathNode lastPathNode = GetLastPathNode(startPosition, endPosition);
         if (lastPathNode == null) {
             Debug.Log("no path found");
             return null;
         }
 
-        List<Vector3> newPathList = new List<Vector3>();
+        List<Vector3Int> newPathList = new List<Vector3Int>();
 
         PathNode current = lastPathNode;
         while (current.parent != null) {
@@ -195,18 +195,19 @@ public class Level : MonoBehaviour {
         return newPathList;
     }
 
-    private IEnumerator DrawPath_Coroutine(List<Vector3> list) {
+    private IEnumerator DrawPath_Coroutine(List<Vector3Int> list) {
         for (int i = 0; i < list.Count; i++) {
-            Debug.DrawRay(list[i], Vector3.up, Color.green, 1);
+            Debug.DrawRay(list[i], Vector3Int.up, Color.green, 1);
             yield return new WaitForSeconds(0.1f);
         }
     }
 
-    private PathNode GetLastNode(Vector3 startPosition, Vector3 endPosition) {
+    private PathNode GetLastPathNode(Vector3Int startPosition, Vector3Int endPosition) {
         // 3D grid of nodes (only roads)
-        Dictionary<Vector3, PathNode> pathNodes = new Dictionary<Vector3, PathNode>();
+        Dictionary<Vector3Int, PathNode> pathNodes = new Dictionary<Vector3Int, PathNode>();
         foreach (var voxel in voxelsDictionary) {
             if (voxel.Value is RoadVoxel) {
+                Debug.Log("road", voxel.Value);
                 pathNodes.Add(voxel.Key, new PathNode {
                     position = voxel.Key,
                     h = (voxel.Key - endPosition).magnitude,
@@ -222,15 +223,15 @@ public class Level : MonoBehaviour {
         }
 
 
-        Dictionary<Vector3, PathNode> opened = new Dictionary<Vector3, PathNode>();
-        Dictionary<Vector3, PathNode> closed = new Dictionary<Vector3, PathNode>();
+        Dictionary<Vector3Int, PathNode> opened = new Dictionary<Vector3Int, PathNode>();
+        Dictionary<Vector3Int, PathNode> closed = new Dictionary<Vector3Int, PathNode>();
         opened.Add(startPosition, startNode);
 
 
         // offsets for later use
-        List<Vector3> neibors = new List<Vector3> {
-                Vector3.forward, Vector3.right, Vector3.back, Vector3.left,
-                Vector3.forward + Vector3.right, Vector3.right + Vector3.back, Vector3.back + Vector3.left, Vector3.left + Vector3.forward,
+        List<Vector3Int> neibors = new List<Vector3Int> {
+                Vector3Int.forward, Vector3Int.right, Vector3Int.back, Vector3Int.left,
+                Vector3Int.forward + Vector3Int.right, Vector3Int.right + Vector3Int.back, Vector3Int.back + Vector3Int.left, Vector3Int.left + Vector3Int.forward,
         };
 
 
@@ -239,7 +240,7 @@ public class Level : MonoBehaviour {
             if (opened.Count == 0) {
                 Debug.Log(closed.Count);
                 foreach (var c in closed) {
-                    Debug.DrawRay(c.Value.position + Vector3.up, Vector3.up, Color.red, 1f);
+                    Debug.DrawRay(c.Value.position + Vector3Int.up, Vector3Int.up, Color.red, 1f);
                 }
                 return null;
             }

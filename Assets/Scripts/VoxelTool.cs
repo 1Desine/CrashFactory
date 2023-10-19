@@ -1,4 +1,5 @@
 using System;
+using System.Security.Cryptography;
 using UnityEngine;
 
 public class VoxelTool : MonoBehaviour {
@@ -43,17 +44,17 @@ public class VoxelTool : MonoBehaviour {
         Ray ray = Player.Instance.GetPlayerCamera().ScreenPointToRay(Input.mousePosition);
         if (Physics.Raycast(ray, out RaycastHit hit)) {
 
-            Vector3 cellPosition = new Vector3(
-                    Mathf.Round(hit.point.x),
-                    Mathf.Round(hit.point.y + 1),
-                    Mathf.Round(hit.point.z));
+            Vector3Int cellPosition = new Vector3Int(
+                    (int)Mathf.Round(hit.point.x),
+                    (int)Mathf.Round(hit.point.y),
+                    (int)Mathf.Round(hit.point.z));
 
 
             if (hit.transform.parent.TryGetComponent(out Voxel voxel)) {
-                cellPosition = new Vector3(
-                    Mathf.Round(voxel.transform.position.x),
-                    Mathf.Round(voxel.transform.position.y),
-                    Mathf.Round(voxel.transform.position.z));
+                cellPosition = new Vector3Int(
+                    (int)Mathf.Round(voxel.transform.position.x),
+                    (int)Mathf.Round(voxel.transform.position.y),
+                    (int)Mathf.Round(voxel.transform.position.z));
 
                 Debug.DrawLine(voxel.transform.position, cellPosition + hit.normal, Color.green);
             }
@@ -62,12 +63,12 @@ public class VoxelTool : MonoBehaviour {
                 switch (currentBrush) {
                     case VoxelType.Doser: {
                         if (voxel == null) break;
-                        Level.Instrance.TryRemoveVoxel(voxel.transform.position);
+                        Level.Instrance.TryRemoveVoxel(Vector3Int.RoundToInt(voxel.transform.position));
                         break;
                     }
                     case VoxelType.Solid:
                     case VoxelType.Road:
-                    Level.Instrance.TryAddVoxel(currentBrush.ToString(), cellPosition + hit.normal);
+                    Level.Instrance.TryAddVoxel(currentBrush.ToString(), Vector3Int.RoundToInt(cellPosition + hit.normal));
                     break;
                 }
             }
