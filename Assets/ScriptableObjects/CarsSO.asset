@@ -12,4 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0880247bff595f949aa21139392cc9fc, type: 3}
   m_Name: CarsSO
   m_EditorClassIdentifier: 
-  carsList: []
+  carsList:
+  - {fileID: 1214847205794291665, guid: f31dc66fb3f4cd9488affa6e44810ee2, type: 3}

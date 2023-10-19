@@ -43,18 +43,10 @@ public class VoxelTool : MonoBehaviour {
 
         Ray ray = Player.Instance.GetPlayerCamera().ScreenPointToRay(Input.mousePosition);
         if (Physics.Raycast(ray, out RaycastHit hit)) {
-
-            Vector3Int cellPosition = new Vector3Int(
-                    (int)Mathf.Round(hit.point.x),
-                    (int)Mathf.Round(hit.point.y),
-                    (int)Mathf.Round(hit.point.z));
-
+            Vector3Int cellPosition = Vector3Int.RoundToInt(hit.point);
 
             if (hit.transform.parent.TryGetComponent(out Voxel voxel)) {
-                cellPosition = new Vector3Int(
-                    (int)Mathf.Round(voxel.transform.position.x),
-                    (int)Mathf.Round(voxel.transform.position.y),
-                    (int)Mathf.Round(voxel.transform.position.z));
+                cellPosition = Vector3Int.RoundToInt(voxel.transform.position);
 
                 Debug.DrawLine(voxel.transform.position, cellPosition + hit.normal, Color.green);
             }
@@ -72,7 +64,6 @@ public class VoxelTool : MonoBehaviour {
                     break;
                 }
             }
-
 
             Vector3 lb = cellPosition + Vector3.back * 0.5f + Vector3.left * 0.5f;
             Vector3 lf = cellPosition + Vector3.forward * 0.5f + Vector3.left * 0.5f;

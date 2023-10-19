@@ -19,6 +19,7 @@ public class Level : MonoBehaviour {
     [SerializeField] private VoxelsSO voxelsSO;
     [SerializeField] private Transform solidVoxelsHolder;
     [SerializeField] private Transform roadVoxelsHolder;
+    [SerializeField] private Transform carHolder;
 
     [SerializeField] private CarsSO carsSO;
 
@@ -26,10 +27,11 @@ public class Level : MonoBehaviour {
 
 
 
-    public Action OnDeleteVoxels;
+    public Action OnClearLevel;
 
 
     private Dictionary<Vector3Int, Voxel> voxelsDictionary;
+    private List<Car> carsList = new List<Car>();
 
 
     private void Awake() {
@@ -39,13 +41,6 @@ public class Level : MonoBehaviour {
     }
 
     private void Update() {
-        if (Input.GetKeyDown(KeyCode.I)) {
-            foreach (var dic in voxelsDictionary) {
-                if (dic.Value is RoadVoxel road) Debug.Log("road");
-                if (dic.Value is SolidVoxel solid) Debug.Log("solid");
-            }
-        }
-
         if (Input.GetKeyDown(KeyCode.P)) {
             pathList = GetPathByRoad(Vector3Int.up, new Vector3Int(3, 1, 3));
         }
@@ -58,12 +53,13 @@ public class Level : MonoBehaviour {
 
 
         // Voxels
-        //solid
-        public List<Vector3Int> solidVoxelsPositions = new List<Vector3Int>();
-        //road
-        public List<Vector3Int> roadVoxelsPositions = new List<Vector3Int>();
+        public List<Vector3Int> solidVoxelsPositions = new List<Vector3Int>(); //solid
+        public List<Vector3Int> roadVoxelsPositions = new List<Vector3Int>(); //road
 
-        // cars
+        // Cars
+        public List<Vector3> carsPositions = new List<Vector3>(); //road
+        public List<Quaternion> carsRotations = new List<Quaternion>(); //road
+        public List<Car.Type> carsTypes = new List<Car.Type>(); //road
 
 
     }
@@ -73,17 +69,23 @@ public class Level : MonoBehaviour {
         LevelInfo LevelInfo = new LevelInfo();
 
         // Voxels
-        foreach (var dic in voxelsDictionary) {
+        foreach (var voxel in voxelsDictionary) {
             //solid
-            if (dic.Value is SolidVoxel solidVoxel) {
-                LevelInfo.solidVoxelsPositions.Add(Vector3Int.RoundToInt(dic.Value.transform.position));
+            if (voxel.Value is SolidVoxel solidVoxel) {
+                LevelInfo.solidVoxelsPositions.Add(Vector3Int.RoundToInt(voxel.Value.transform.position));
             }
             //road
-            if (dic.Value is RoadVoxel roadVoxel) {
-                LevelInfo.solidVoxelsPositions.Add(Vector3Int.RoundToInt(dic.Value.transform.position));
+            if (voxel.Value is RoadVoxel roadVoxel) {
+                LevelInfo.roadVoxelsPositions.Add(Vector3Int.RoundToInt(voxel.Value.transform.position));
             }
         }
-
+        // Cars
+        foreach (Car car in carsList) {
+            Car.CarInfo carInfo = car.GetCarInfo();
+            LevelInfo.carsPositions.Add(carInfo.position);
+            LevelInfo.carsRotations.Add(carInfo.rotation);
+            LevelInfo.carsTypes.Add(carInfo.type);
+        }
 
         SaveSystem.WriteJson(SAVES_PATH + fileName, SaveSystem.SerializeJson(LevelInfo));
     }
@@ -91,24 +93,30 @@ public class Level : MonoBehaviour {
         LevelInfo LevelInfo = SaveSystem.DeserializeJson<LevelInfo>(SaveSystem.ReadJson(SAVES_PATH + fileName));
 
         // Voxels
-        OnDeleteVoxels?.Invoke();
-        //solid
+        OnClearLevel?.Invoke();
         voxelsDictionary.Clear();
+        //solid
         for (int i = 0; i < LevelInfo.solidVoxelsPositions.Count; i++) {
-            SolidVoxel newVoxel = Instantiate(new SolidVoxel(), solidVoxelsHolder);
+            SolidVoxel newVoxel = Instantiate(voxelsSO.solidVoxelPrefabs, solidVoxelsHolder);
 
             newVoxel.transform.position = LevelInfo.solidVoxelsPositions[i];
 
             voxelsDictionary.Add(LevelInfo.solidVoxelsPositions[i], newVoxel);
         }
         //road
-        voxelsDictionary.Clear();
-        for (int i = 0; i < LevelInfo.solidVoxelsPositions.Count; i++) {
-            RoadVoxel newVoxel = Instantiate(new RoadVoxel(), solidVoxelsHolder);
+        for (int i = 0; i < LevelInfo.roadVoxelsPositions.Count; i++) {
+            RoadVoxel newVoxel = Instantiate(voxelsSO.roadVoxelPrefabs, solidVoxelsHolder);
 
-            newVoxel.transform.position = LevelInfo.solidVoxelsPositions[i];
+            newVoxel.transform.position = LevelInfo.roadVoxelsPositions[i];
 
-            voxelsDictionary.Add(LevelInfo.solidVoxelsPositions[i], newVoxel);
+            voxelsDictionary.Add(LevelInfo.roadVoxelsPositions[i], newVoxel);
+        }
+        // Cars
+        carsList.Clear();
+        for (int i = 0; i < LevelInfo.carsTypes.Count; i++) {
+            Car newCar = Instantiate(carsSO.GetCarByType(LevelInfo.carsTypes[i]), carHolder);
+            newCar.transform.position = LevelInfo.carsPositions[i];
+            newCar.transform.rotation = LevelInfo.carsRotations[i];
         }
 
     }
@@ -118,7 +126,6 @@ public class Level : MonoBehaviour {
         if (voxelFromDictionary != null) {
             return;
         }
-
 
         switch (voxelType) {
             case "Solid": {
@@ -138,7 +145,6 @@ public class Level : MonoBehaviour {
                 break;
             }
         }
-
     }
     public void TryRemoveVoxel(Vector3Int position) {
         voxelsDictionary.TryGetValue(position, out Voxel voxelFromDictionary);
@@ -147,6 +153,12 @@ public class Level : MonoBehaviour {
         }
         voxelFromDictionary.DestroySelf();
         voxelsDictionary.Remove(position);
+    }
+    public void RegisterCar(Car car) {
+        carsList.Add(car);
+    }
+    public void UnregisterCar(Car car) {
+        carsList.Remove(car);
     }
 
 
@@ -289,10 +301,10 @@ public class Level : MonoBehaviour {
             Level level = (Level)target;
 
             if (GUILayout.Button("SaveToJson")) {
-
+                level.SaveLevelToJson();
             }
             if (GUILayout.Button("ReadFromJson")) {
-
+                level.LoadLevelFromJson();
             }
 
         }

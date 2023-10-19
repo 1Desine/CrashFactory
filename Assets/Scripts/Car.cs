@@ -22,6 +22,7 @@ public class Car : MonoBehaviour {
 
     [Header("Wheels")]
     [SerializeField, Min(0)] private float tireFriction = 500f;
+    [SerializeField, Min(0)] private float tireFrictionLimit = 500f;
     [SerializeField, Min(0)] private float tireRadiusVisual = 0.25f;
     [SerializeField, Min(0)] private float tireWidth = 0.1f;
 
@@ -54,20 +55,31 @@ public class Car : MonoBehaviour {
 
 
     [SerializeField]
-    public class carInfo {
+    public class CarInfo {
         public Vector3 position;
         public Quaternion rotation;
 
         public Type type;
+    }
+    public CarInfo GetCarInfo() {
+        CarInfo carInfo = new CarInfo {
+            position = transform.position,
+            rotation = transform.rotation,
+            type = type,
+        };
 
-
-
+        return carInfo;
     }
 
 
 
     private void Awake() {
         body = GetComponent<Rigidbody>();
+    }
+
+    private void Start() {
+        Level.Instrance.RegisterCar(this);
+        Level.Instrance.OnClearLevel += DestroySelf;
     }
 
     private void Update() {
@@ -93,6 +105,14 @@ public class Car : MonoBehaviour {
         ApplySideGrip();
         HandleAccelerationAndDeceleration();
     }
+
+    public void DestroySelf() {
+        Level.Instrance.UnregisterCar(this);
+        Level.Instrance.OnClearLevel -= DestroySelf;
+
+        Destroy(gameObject);
+    }
+
 
     private void Steer(float desiredSteerAngle) {
         float carSpeed = Vector3.Dot(transform.forward, body.velocity);
@@ -158,12 +178,12 @@ public class Car : MonoBehaviour {
             if (Physics.Raycast(tireTransform.position, -tireTransform.transform.up, out RaycastHit tireRay, springDistance)) {
                 Vector3 velocityRightComponent = Vector3.Dot(body.GetPointVelocity(tireTransform.position), Vector3.Cross(tireTransform.forward, tireRay.normal).normalized) * Vector3.Cross(tireTransform.forward, tireRay.normal).normalized;
 
-                Vector3 sideVelocity = velocityRightComponent * body.mass / tireTransformList.Count * (springDistance - tireRay.distance);
+                Vector3 sideVelocity = velocityRightComponent * body.mass / tireTransformList.Count * (springDistance - tireRay.distance) * tireFriction;
+                sideVelocity = Vector3.ClampMagnitude(sideVelocity, tireFrictionLimit); 
 
-                body.AddForceAtPosition(-sideVelocity * tireFriction * Time.fixedDeltaTime, tireRay.point);
+                body.AddForceAtPosition(-sideVelocity * Time.fixedDeltaTime, tireRay.point);
 
-
-                Debug.DrawRay(tireRay.point + tireTransform.up, sideVelocity * 10, Color.red);
+                Debug.DrawRay(tireRay.point + tireTransform.up, sideVelocity, Color.red);
                 Debug.DrawRay(tireRay.point + tireTransform.up, Vector3.Cross(tireTransform.right, tireRay.normal) / 2, Color.blue);
             }
         }
@@ -218,36 +238,36 @@ public class Car : MonoBehaviour {
         Gizmos.color = Color.green;
 
         Vector3 currentWayPoint = GetCurrentWayPoint();
-        Gizmos.DrawSphere(new Vector3(currentWayPoint.x, 0, currentWayPoint.y), 0.3f);
+        Gizmos.DrawSphere(currentWayPoint, 0.3f);
     }
 
 
-    private List<Vector3> roadPath = new List<Vector3> {
-        new Vector3(0,0,0),
-        new Vector3(0,0,1),
-        new Vector3(0,0,2),
-        new Vector3(0,0,3),
-        new Vector3(0,0,4),
-                  
-        new Vector3(1,0,4),
-        new Vector3(2,0,4),
-        new Vector3(3,0,4),
-        new Vector3(4,0,4),
-                  
-        new Vector3(5,0,5),
-        new Vector3(5,0,6),
-                  
-        new Vector3(6,0,6),
-        new Vector3(7,0,6),
-        new Vector3(7,0,7),
-        new Vector3(8,0,7),
-        new Vector3(9,0,7),
-        new Vector3(10,0,7),
-                  
-        new Vector3(10,0,4),
-        new Vector3(10,0,0),
-        new Vector3(4,0,0),
-        new Vector3(0,0,0),
+    private List<Vector3Int> roadPath = new List<Vector3Int> {
+        new Vector3Int(0,0,0),
+        new Vector3Int(0,0,1),
+        new Vector3Int(0,0,2),
+        new Vector3Int(0,0,3),
+        new Vector3Int(0,0,4),
+
+        new Vector3Int(1,0,4),
+        new Vector3Int(2,0,4),
+        new Vector3Int(3,0,4),
+        new Vector3Int(4,0,4),
+
+        new Vector3Int(5,0,5),
+        new Vector3Int(5,0,6),
+
+        new Vector3Int(6,0,6),
+        new Vector3Int(7,0,6),
+        new Vector3Int(7,0,7),
+        new Vector3Int(8,0,7),
+        new Vector3Int(9,0,7),
+        new Vector3Int(10,0,7),
+
+        new Vector3Int(10,0,4),
+        new Vector3Int(10,0,0),
+        new Vector3Int(4,0,0),
+        new Vector3Int(0,0,0),
     };
     private int currentWayPoint;
 
@@ -269,7 +289,7 @@ public class Car : MonoBehaviour {
         }
         pointToGo /= smoothing;
 
-        if ((pointToGo- transform.position).magnitude < 1f) {
+        if ((pointToGo - transform.position).magnitude < 1f) {
             //Debug.Log("got here");
             if (roadPath.Count - 1 > currentWayPoint) currentWayPoint++;
             currentWayPoint %= roadPath.Count - 1;
