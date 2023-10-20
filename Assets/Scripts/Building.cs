@@ -1,9 +1,29 @@
 using System.Collections.Generic;
+using Unity.VisualScripting.Antlr3.Runtime.Collections;
 using UnityEngine;
 
 public class Building : MonoBehaviour {
 
     [SerializeField] private List<Transform> interactionZonePath;
+
+
+
+
+
+
+    public int id;
+
+
+
+    private void Update() {
+
+        if (Input.GetKeyDown(KeyCode.T)) {
+            TaskMaganer.Instance.CreateTask(id, -1, new Resource { amount = 100 }, Car.AllTypes);
+        }
+    }
+
+
+
 
 
     public Type type;
@@ -12,16 +32,16 @@ public class Building : MonoBehaviour {
         Mining,
         Processing,
         Production,
-    }
-
+    }    
+    
 
 
     public class BuildingInfo {
-
         public Vector3 position;
         public Quaternion rotation;
 
         public Type type;
+        public int id;
     }
 
     public BuildingInfo GetBuildingInfo() {
@@ -37,13 +57,13 @@ public class Building : MonoBehaviour {
 
 
     private void Start() {
-        Level.Instrance.RegisterBuilding(this);
-        Level.Instrance.OnClearLevel += DestroySelf;
+        Level.Instance.RegisterBuilding(this);
+        Level.Instance.OnClearLevel += DestroySelf;
     }
 
     public void DestroySelf() {
-        Level.Instrance.UnregisterBuilding(this);
-        Level.Instrance.OnClearLevel -= DestroySelf;
+        Level.Instance.UnregisterBuilding(this);
+        Level.Instance.OnClearLevel -= DestroySelf;
 
         Destroy(gameObject);
     }

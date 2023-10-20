@@ -2,7 +2,6 @@
 
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem.XR;
 
 public class Car : MonoBehaviour {
 
@@ -42,7 +41,21 @@ public class Car : MonoBehaviour {
     private Rigidbody body;
 
 
+
+
     public Type type;
+    public static List<Type> AllTypes {
+        get {
+            return new List<Type> {
+                Type.Pickup,
+                Type.Van,
+                Type.TankTruck,
+                Type.RoadTrain1,
+                Type.RoadTrain3,
+                Type.RoadTrain5,
+        };
+        }
+    }
     public enum Type {
         Pickup,
         Van,
@@ -51,6 +64,15 @@ public class Car : MonoBehaviour {
         RoadTrain3,
         RoadTrain5,
     }
+    public List<Resource> availableCargoResourceToCarry;
+    public int carryingCapacity;
+
+
+    public bool isOnMission;
+    private List<Vector3Int> roadPath = new List<Vector3Int>();
+    private int currentWayPoint;
+    public TaskMaganer.Task task;
+    public Resource cargoResource;
 
 
 
@@ -77,8 +99,8 @@ public class Car : MonoBehaviour {
     }
 
     private void Start() {
-        Level.Instrance.RegisterCar(this);
-        Level.Instrance.OnClearLevel += DestroySelf;
+        Level.Instance.RegisterCar(this);
+        Level.Instance.OnClearLevel += DestroySelf;
     }
 
     private void Update() {
@@ -106,8 +128,8 @@ public class Car : MonoBehaviour {
     }
 
     public void DestroySelf() {
-        Level.Instrance.UnregisterCar(this);
-        Level.Instrance.OnClearLevel -= DestroySelf;
+        Level.Instance.UnregisterCar(this);
+        Level.Instance.OnClearLevel -= DestroySelf;
 
         Destroy(gameObject);
     }
@@ -156,7 +178,7 @@ public class Car : MonoBehaviour {
                 // auto decelerating
                 if (throttleInputNormalized == 0) {
                     forceToApply = autoDecelerationForce;
-                     directionOfForce = Vector3.Dot(forwardByNormal, tireForwardVelocity) > 0 ? -1 : 1;
+                    directionOfForce = Vector3.Dot(forwardByNormal, tireForwardVelocity) > 0 ? -1 : 1;
                 }
                 else {
                     // acceletating or decelerating
@@ -165,7 +187,6 @@ public class Car : MonoBehaviour {
                     forceToApply = Vector3.Dot(forwardByNormal * throttleInputNormalized, tireForwardVelocity) > 0 ? throtleToApply : deceleration;
                     directionOfForce = throttleInputNormalized;
                 }
-
 
                 body.AddForceAtPosition(forwardByNormal * directionOfForce * forceToApply / tireToApplyAccelerationForceTransformList.Count * Time.fixedDeltaTime, tireRay.point);
             }
@@ -178,7 +199,10 @@ public class Car : MonoBehaviour {
                 Vector3 velocityRightComponent = Vector3.Dot(body.GetPointVelocity(tireTransform.position), Vector3.Cross(tireTransform.forward, tireRay.normal).normalized) * Vector3.Cross(tireTransform.forward, tireRay.normal).normalized;
 
                 Vector3 sideVelocity = velocityRightComponent * body.mass / tireTransformList.Count * (springDistance - tireRay.distance) * tireFriction;
-                sideVelocity = Vector3.ClampMagnitude(sideVelocity, tireFrictionLimit); 
+                sideVelocity = Vector3.ClampMagnitude(sideVelocity, tireFrictionLimit);
+
+                //Debug.Log(velocityRightComponent.magnitude);
+                //if (velocityRightComponent.magnitude > 3) sideVelocity *= 0.3f;
 
                 body.AddForceAtPosition(-sideVelocity * Time.fixedDeltaTime, tireRay.point);
 
@@ -241,36 +265,11 @@ public class Car : MonoBehaviour {
     }
 
 
-    private List<Vector3Int> roadPath = new List<Vector3Int> {
-        new Vector3Int(0,0,0),
-        new Vector3Int(0,0,1),
-        new Vector3Int(0,0,2),
-        new Vector3Int(0,0,3),
-        new Vector3Int(0,0,4),
 
-        new Vector3Int(1,0,4),
-        new Vector3Int(2,0,4),
-        new Vector3Int(3,0,4),
-        new Vector3Int(4,0,4),
-
-        new Vector3Int(5,0,5),
-        new Vector3Int(5,0,6),
-
-        new Vector3Int(6,0,6),
-        new Vector3Int(7,0,6),
-        new Vector3Int(7,0,7),
-        new Vector3Int(8,0,7),
-        new Vector3Int(9,0,7),
-        new Vector3Int(10,0,7),
-
-        new Vector3Int(10,0,4),
-        new Vector3Int(10,0,0),
-        new Vector3Int(4,0,0),
-        new Vector3Int(0,0,0),
-    };
-    private int currentWayPoint;
-
-
+    public void SetTask(TaskMaganer.Task task) {
+        Debug.Log("car: tast set");
+        Debug.Log("amount of cargo" + task.cargoResource.amount);
+    }
 
 
     private void AgentControl() {
@@ -290,13 +289,43 @@ public class Car : MonoBehaviour {
 
         if ((pointToGo - transform.position).magnitude < 1f) {
             //Debug.Log("got here");
-            if (roadPath.Count - 1 > currentWayPoint) currentWayPoint++;
-            currentWayPoint %= roadPath.Count - 1;
+            if (currentWayPoint < roadPath.Count - 1) currentWayPoint++;
+            else currentWayPoint = 0;
         }
 
         return pointToGo;
     }
 
+    public void SetRoadPath(List<Vector3Int> pathList) {
+        roadPath = new List<Vector3Int> {
+            new Vector3Int(0,0,0),
+            new Vector3Int(0,0,1),
+            new Vector3Int(0,0,2),
+            new Vector3Int(0,0,3),
+            new Vector3Int(0,0,4),
 
+            new Vector3Int(1,0,4),
+            new Vector3Int(2,0,4),
+            new Vector3Int(3,0,4),
+            new Vector3Int(4,0,4),
+
+            new Vector3Int(5,0,5),
+            new Vector3Int(5,0,6),
+
+            new Vector3Int(6,0,6),
+            new Vector3Int(7,0,6),
+            new Vector3Int(7,0,7),
+            new Vector3Int(8,0,7),
+            new Vector3Int(9,0,7),
+            new Vector3Int(10,0,7),
+
+            new Vector3Int(10,0,4),
+            new Vector3Int(10,0,0),
+            new Vector3Int(4,0,0),
+            new Vector3Int(0,0,0),
+        };
+
+        //roadPath = pathList;
+    }
 
 }

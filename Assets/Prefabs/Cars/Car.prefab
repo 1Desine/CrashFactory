@@ -849,6 +849,16 @@ MonoBehaviour:
   maxSteeringAngle: 60
   steerSpeed: 700
   type: 0
+  availableCargoResourceToCarry:
+  - type: 0
+    amount: 0
+    weightPerPoint: 0
+  carryingCapacity: 0
+  isOnMission: 0
+  cargoResource:
+    type: 0
+    amount: 0
+    weightPerPoint: 0
 --- !u!65 &4426961139128229128
 BoxCollider:
   m_ObjectHideFlags: 0

@@ -55,12 +55,12 @@ public class VoxelTool : MonoBehaviour {
                 switch (currentBrush) {
                     case VoxelType.Doser: {
                         if (voxel == null) break;
-                        Level.Instrance.TryRemoveVoxel(Vector3Int.RoundToInt(voxel.transform.position));
+                        Level.Instance.TryRemoveVoxel(Vector3Int.RoundToInt(voxel.transform.position));
                         break;
                     }
                     case VoxelType.Solid:
                     case VoxelType.Road:
-                    Level.Instrance.TryAddVoxel(currentBrush.ToString(), Vector3Int.RoundToInt(cellPosition + hit.normal));
+                    Level.Instance.TryAddVoxel(currentBrush.ToString(), Vector3Int.RoundToInt(cellPosition + hit.normal));
                     break;
                 }
             }

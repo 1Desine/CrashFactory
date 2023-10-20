@@ -1,41 +1,392 @@
 {
-  "solidVoxelsPositions": [],
-  "roadVoxelsPositions": [],
+  "solidVoxelsPositions": [
+    {
+      "x": -1,
+      "y": 1,
+      "z": -4,
+      "magnitude": 4.2426405,
+      "sqrMagnitude": 18
+    }
+  ],
+  "roadVoxelsPositions": [
+    {
+      "x": 0,
+      "y": 1,
+      "z": 0,
+      "magnitude": 1.0,
+      "sqrMagnitude": 1
+    },
+    {
+      "x": 1,
+      "y": 1,
+      "z": 0,
+      "magnitude": 1.41421354,
+      "sqrMagnitude": 2
+    },
+    {
+      "x": 2,
+      "y": 1,
+      "z": 0,
+      "magnitude": 2.236068,
+      "sqrMagnitude": 5
+    },
+    {
+      "x": 3,
+      "y": 1,
+      "z": 0,
+      "magnitude": 3.1622777,
+      "sqrMagnitude": 10
+    },
+    {
+      "x": 3,
+      "y": 1,
+      "z": 3,
+      "magnitude": 4.358899,
+      "sqrMagnitude": 19
+    },
+    {
+      "x": 3,
+      "y": 1,
+      "z": 2,
+      "magnitude": 3.7416575,
+      "sqrMagnitude": 14
+    },
+    {
+      "x": 4,
+      "y": 1,
+      "z": -1,
+      "magnitude": 4.2426405,
+      "sqrMagnitude": 18
+    },
+    {
+      "x": 4,
+      "y": 1,
+      "z": 0,
+      "magnitude": 4.12310553,
+      "sqrMagnitude": 17
+    },
+    {
+      "x": 6,
+      "y": 1,
+      "z": 0,
+      "magnitude": 6.08276272,
+      "sqrMagnitude": 37
+    },
+    {
+      "x": 4,
+      "y": 1,
+      "z": 3,
+      "magnitude": 5.09901953,
+      "sqrMagnitude": 26
+    },
+    {
+      "x": 6,
+      "y": 1,
+      "z": 3,
+      "magnitude": 6.78233,
+      "sqrMagnitude": 46
+    },
+    {
+      "x": 5,
+      "y": 1,
+      "z": 3,
+      "magnitude": 5.91608,
+      "sqrMagnitude": 35
+    },
+    {
+      "x": 6,
+      "y": 1,
+      "z": 2,
+      "magnitude": 6.40312433,
+      "sqrMagnitude": 41
+    },
+    {
+      "x": 6,
+      "y": 1,
+      "z": 1,
+      "magnitude": 6.164414,
+      "sqrMagnitude": 38
+    },
+    {
+      "x": 4,
+      "y": 1,
+      "z": -2,
+      "magnitude": 4.582576,
+      "sqrMagnitude": 21
+    },
+    {
+      "x": 4,
+      "y": 1,
+      "z": -3,
+      "magnitude": 5.09901953,
+      "sqrMagnitude": 26
+    },
+    {
+      "x": 4,
+      "y": 1,
+      "z": -4,
+      "magnitude": 5.74456263,
+      "sqrMagnitude": 33
+    },
+    {
+      "x": 3,
+      "y": 1,
+      "z": -5,
+      "magnitude": 5.91608,
+      "sqrMagnitude": 35
+    },
+    {
+      "x": 4,
+      "y": 1,
+      "z": -5,
+      "magnitude": 6.48074055,
+      "sqrMagnitude": 42
+    },
+    {
+      "x": 2,
+      "y": 1,
+      "z": -5,
+      "magnitude": 5.477226,
+      "sqrMagnitude": 30
+    },
+    {
+      "x": 1,
+      "y": 1,
+      "z": -5,
+      "magnitude": 5.196152,
+      "sqrMagnitude": 27
+    },
+    {
+      "x": 0,
+      "y": 1,
+      "z": -5,
+      "magnitude": 5.09901953,
+      "sqrMagnitude": 26
+    },
+    {
+      "x": -2,
+      "y": 1,
+      "z": -5,
+      "magnitude": 5.477226,
+      "sqrMagnitude": 30
+    },
+    {
+      "x": -1,
+      "y": 1,
+      "z": -5,
+      "magnitude": 5.196152,
+      "sqrMagnitude": 27
+    },
+    {
+      "x": -2,
+      "y": 1,
+      "z": -4,
+      "magnitude": 4.582576,
+      "sqrMagnitude": 21
+    },
+    {
+      "x": -2,
+      "y": 1,
+      "z": -3,
+      "magnitude": 3.7416575,
+      "sqrMagnitude": 14
+    },
+    {
+      "x": -2,
+      "y": 1,
+      "z": -2,
+      "magnitude": 3.0,
+      "sqrMagnitude": 9
+    },
+    {
+      "x": -2,
+      "y": 1,
+      "z": -1,
+      "magnitude": 2.44948983,
+      "sqrMagnitude": 6
+    },
+    {
+      "x": -2,
+      "y": 1,
+      "z": 0,
+      "magnitude": 2.236068,
+      "sqrMagnitude": 5
+    },
+    {
+      "x": -2,
+      "y": 1,
+      "z": 1,
+      "magnitude": 2.44948983,
+      "sqrMagnitude": 6
+    },
+    {
+      "x": -2,
+      "y": 1,
+      "z": 2,
+      "magnitude": 3.0,
+      "sqrMagnitude": 9
+    },
+    {
+      "x": -2,
+      "y": 1,
+      "z": 3,
+      "magnitude": 3.7416575,
+      "sqrMagnitude": 14
+    },
+    {
+      "x": -1,
+      "y": 1,
+      "z": 3,
+      "magnitude": 3.31662488,
+      "sqrMagnitude": 11
+    },
+    {
+      "x": 0,
+      "y": 1,
+      "z": 3,
+      "magnitude": 3.1622777,
+      "sqrMagnitude": 10
+    },
+    {
+      "x": 1,
+      "y": 1,
+      "z": 3,
+      "magnitude": 3.31662488,
+      "sqrMagnitude": 11
+    },
+    {
+      "x": 2,
+      "y": 1,
+      "z": 3,
+      "magnitude": 3.7416575,
+      "sqrMagnitude": 14
+    },
+    {
+      "x": 0,
+      "y": 1,
+      "z": -4,
+      "magnitude": 4.12310553,
+      "sqrMagnitude": 17
+    },
+    {
+      "x": -1,
+      "y": 1,
+      "z": -3,
+      "magnitude": 3.31662488,
+      "sqrMagnitude": 11
+    },
+    {
+      "x": 1,
+      "y": 1,
+      "z": -4,
+      "magnitude": 4.2426405,
+      "sqrMagnitude": 18
+    },
+    {
+      "x": 0,
+      "y": 1,
+      "z": -3,
+      "magnitude": 3.1622777,
+      "sqrMagnitude": 10
+    },
+    {
+      "x": -1,
+      "y": 1,
+      "z": -2,
+      "magnitude": 2.44948983,
+      "sqrMagnitude": 6
+    },
+    {
+      "x": 6,
+      "y": 1,
+      "z": -1,
+      "magnitude": 6.164414,
+      "sqrMagnitude": 38
+    },
+    {
+      "x": 6,
+      "y": 1,
+      "z": -3,
+      "magnitude": 6.78233,
+      "sqrMagnitude": 46
+    },
+    {
+      "x": 6,
+      "y": 1,
+      "z": -2,
+      "magnitude": 6.40312433,
+      "sqrMagnitude": 41
+    },
+    {
+      "x": 5,
+      "y": 1,
+      "z": -3,
+      "magnitude": 5.91608,
+      "sqrMagnitude": 35
+    },
+    {
+      "x": 7,
+      "y": 1,
+      "z": 2,
+      "magnitude": 7.34846926,
+      "sqrMagnitude": 54
+    }
+  ],
   "carsPositions": [
     {
-      "x": 3.23481536,
-      "y": 0.145219341,
-      "z": -4.249257,
+      "x": 1.77656019,
+      "y": 0.145225808,
+      "z": -0.9008498,
       "normalized": {
-        "x": 0.605497837,
-        "y": 0.0271823853,
-        "z": -0.7953826,
+        "x": 0.889527738,
+        "y": 0.072714895,
+        "z": -0.451057583,
         "magnitude": 1.0,
         "sqrMagnitude": 1.0
       },
-      "magnitude": 5.34240627,
-      "sqrMagnitude": 28.5413055
+      "magnitude": 1.99719477,
+      "sqrMagnitude": 3.988787
     }
   ],
   "carsRotations": [
     {
-      "x": 0.00264142454,
-      "y": -0.136482224,
-      "z": -0.0003609322,
-      "w": 0.990639,
+      "x": -0.00403787149,
+      "y": -0.0003380709,
+      "z": 0.000322087872,
+      "w": -0.9999917,
       "eulerAngles": {
-        "x": 0.294207931,
-        "y": 344.311066,
-        "z": 359.917725,
+        "x": 0.462719768,
+        "y": 0.0385919847,
+        "z": 359.963257,
         "normalized": {
-          "x": 0.0005906754,
-          "y": 0.6912665,
-          "z": 0.7225997,
+          "x": 0.00128546276,
+          "y": 0.000107210806,
+          "z": 0.999999166,
           "magnitude": 1.0,
           "sqrMagnitude": 1.0
         },
-        "magnitude": 498.0873,
-        "sqrMagnitude": 248090.969
+        "magnitude": 359.963562,
+        "sqrMagnitude": 129573.766
+      },
+      "normalized": {
+        "x": -0.004037872,
+        "y": -0.000338070939,
+        "z": 0.0003220879,
+        "w": -0.9999918,
+        "eulerAngles": {
+          "x": 0.462719768,
+          "y": 0.0385919847,
+          "z": 359.963257,
+          "normalized": {
+            "x": 0.00128546276,
+            "y": 0.000107210806,
+            "z": 0.999999166,
+            "magnitude": 1.0,
+            "sqrMagnitude": 1.0
+          },
+          "magnitude": 359.963562,
+          "sqrMagnitude": 129573.766
+        }
       }
     }
   ],
@@ -44,18 +395,18 @@
   ],
   "buildingsPositions": [
     {
-      "x": 4.28,
+      "x": 0.93,
       "y": 0.0,
-      "z": 3.25,
+      "z": 8.74,
       "normalized": {
-        "x": 0.7964131,
+        "x": 0.105809994,
         "y": 0.0,
-        "z": 0.604752958,
+        "z": 0.9943864,
         "magnitude": 1.0,
         "sqrMagnitude": 1.0
       },
-      "magnitude": 5.37409544,
-      "sqrMagnitude": 28.8809013
+      "magnitude": 8.78934,
+      "sqrMagnitude": 77.2524948
     }
   ],
   "buildingsRotations": [

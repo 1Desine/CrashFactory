@@ -38,11 +38,10 @@ public class Player : MonoBehaviour {
 
         // pivot around 
         if (GameInput.Instance.GetPivotAroundButton()) {
-            if (Physics.Raycast(ray, out RaycastHit hit)) {
-                if (lookPivotPoint != Vector3.zero)
-                    PivotAroundPoint(lookPivotPoint, GameInput.Instance.GetLookVector2() * lookSensitivity);
-                else lookPivotPoint = hit.point;
-            }
+            if (lookPivotPoint != Vector3.zero)
+                PivotAroundPoint(lookPivotPoint, GameInput.Instance.GetLookVector2() * lookSensitivity);
+            else if (Physics.Raycast(ray, out RaycastHit hit)) 
+                lookPivotPoint = hit.point;
         }
         else lookPivotPoint = Vector3.zero;
 

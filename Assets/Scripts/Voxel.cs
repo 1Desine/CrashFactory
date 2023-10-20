@@ -8,14 +8,14 @@ public class Voxel : MonoBehaviour {
 
 
     private void Start() {
-        Level.Instrance.OnClearLevel += Map_OnDeleteVoxels;
+        Level.Instance.OnClearLevel += Map_OnDeleteVoxels;
     }
 
     private void Map_OnDeleteVoxels() {
         DestroySelf();
     }
     public void DestroySelf() {
-        Level.Instrance.OnClearLevel -= Map_OnDeleteVoxels;
+        Level.Instance.OnClearLevel -= Map_OnDeleteVoxels;
 
         Destroy(gameObject);
     }

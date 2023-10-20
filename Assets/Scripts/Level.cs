@@ -8,7 +8,7 @@ using System.Linq;
 using System.Collections;
 
 public class Level : MonoBehaviour {
-    public static Level Instrance { get; private set; }
+    public static Level Instance { get; private set; }
 
     const string SAVES_PATH = "\\Levels\\";
     [SerializeField] private string fileName;
@@ -33,11 +33,11 @@ public class Level : MonoBehaviour {
 
     private Dictionary<Vector3Int, Voxel> voxelsDictionary;
     private List<Car> carsList = new List<Car>();
-    private List<Building> buildingsList = new List<Building>();
+    private Dictionary<int, Building> buildingsList = new Dictionary<int, Building>();
 
 
     private void Awake() {
-        Instrance = this;
+        Instance = this;
 
         voxelsDictionary = new Dictionary<Vector3Int, Voxel>();
     }
@@ -59,18 +59,16 @@ public class Level : MonoBehaviour {
         public List<Vector3Int> roadVoxelsPositions = new List<Vector3Int>(); //road
 
         // Cars
-        public List<Vector3> carsPositions = new List<Vector3>(); //road
-        public List<Quaternion> carsRotations = new List<Quaternion>(); //road
-        public List<Car.Type> carsTypes = new List<Car.Type>(); //road
+        public List<Vector3> carsPositions = new List<Vector3>();
+        public List<Quaternion> carsRotations = new List<Quaternion>();
+        public List<Car.Type> carsTypes = new List<Car.Type>();
 
         // Buildings
-        public List<Vector3> buildingsPositions = new List<Vector3>(); //road
-        public List<Quaternion> buildingsRotations = new List<Quaternion>(); //road
-        public List<Building.Type> buildingsTypes = new List<Building.Type>(); //road
+        public List<Vector3> buildingsPositions = new List<Vector3>();
+        public List<Quaternion> buildingsRotations = new List<Quaternion>();
+        public List<Building.Type> buildingsTypes = new List<Building.Type>();
 
     }
-
-
     private void SaveLevelToJson() {
         LevelInfo LevelInfo = new LevelInfo();
 
@@ -95,8 +93,8 @@ public class Level : MonoBehaviour {
         }
 
         // Buildings
-        foreach (Building building in buildingsList) {
-            Building.BuildingInfo buildingInfo = building.GetBuildingInfo();
+        foreach (var building in buildingsList) {
+            Building.BuildingInfo buildingInfo = building.Value.GetBuildingInfo();
             LevelInfo.buildingsPositions.Add(buildingInfo.position);
             LevelInfo.buildingsRotations.Add(buildingInfo.rotation);
             LevelInfo.buildingsTypes.Add(buildingInfo.type);
@@ -143,9 +141,7 @@ public class Level : MonoBehaviour {
             newBuilding.transform.rotation = LevelInfo.buildingsRotations[i];
         }
 
-
     }
-
     public void TryAddVoxel(string voxelType, Vector3Int position) {
         voxelsDictionary.TryGetValue(position, out Voxel voxelFromDictionary);
         if (voxelFromDictionary != null) {
@@ -183,8 +179,14 @@ public class Level : MonoBehaviour {
     public void RegisterCar(Car car) => carsList.Add(car);
     public void UnregisterCar(Car car) => carsList.Remove(car);
 
-    public void RegisterBuilding(Building building) => buildingsList.Add(building);
-    public void UnregisterBuilding(Building building) => buildingsList.Remove(building);
+    public void RegisterBuilding(Building building) {
+        building.id = buildingsList.Count == 0 ? 0 : buildingsList.Last().Key;
+        buildingsList.Add(building.id, building);
+    }
+    public void UnregisterBuilding(Building building) => buildingsList.Remove(building.id);
+
+    public List<Car> GetCarsList() => carsList;
+
 
 
 
@@ -195,10 +197,12 @@ public class Level : MonoBehaviour {
         Gizmos.color = Color.blue;
 
         if (pathList != null)
-            foreach (var pathPoint in pathList) {
+            foreach (var pathPoint in pathList)
                 Gizmos.DrawSphere(pathPoint, 0.3f);
-            }
     }
+
+
+
 
 
 
@@ -268,12 +272,11 @@ public class Level : MonoBehaviour {
         // offsets for later use
         List<Vector3Int> neibors = new List<Vector3Int> {
                 Vector3Int.forward, Vector3Int.right, Vector3Int.back, Vector3Int.left,
-                Vector3Int.forward + Vector3Int.right, Vector3Int.right + Vector3Int.back, Vector3Int.back + Vector3Int.left, Vector3Int.left + Vector3Int.forward,
+                //Vector3Int.forward + Vector3Int.right, Vector3Int.right + Vector3Int.back, Vector3Int.back + Vector3Int.left, Vector3Int.left + Vector3Int.forward,
         };
 
 
-        int iterations = 1000;
-        while (--iterations > 0) {
+        while (true) {
             if (opened.Count == 0) {
                 Debug.Log(closed.Count);
                 foreach (var c in closed) {
@@ -311,8 +314,6 @@ public class Level : MonoBehaviour {
                 }
             }
         }
-
-        return null;
     }
 
 
