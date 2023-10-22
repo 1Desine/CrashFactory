@@ -31,7 +31,7 @@ public class Level : MonoBehaviour {
     public Action OnClearLevel;
 
 
-    private Dictionary<Vector3Int, Voxel> voxelsDictionary;
+    private Dictionary<Vector3Int, Voxel> voxelsDictionary = new Dictionary<Vector3Int, Voxel>();
     private List<Car> carsList = new List<Car>();
     private Dictionary<int, Building> buildingsList = new Dictionary<int, Building>();
 
@@ -181,9 +181,11 @@ public class Level : MonoBehaviour {
 
     public void RegisterBuilding(Building building) {
         building.id = buildingsList.Count == 0 ? 0 : buildingsList.Last().Key;
-        buildingsList.Add(building.id, building);
+        buildingsList.TryAdd(building.id, building);
     }
     public void UnregisterBuilding(Building building) => buildingsList.Remove(building.id);
+
+    public void RegisterVoxel(Voxel voxel) => voxelsDictionary.TryAdd(Vector3Int.RoundToInt(voxel.transform.position), voxel);
 
     public List<Car> GetCarsList() => carsList;
 
@@ -217,12 +219,12 @@ public class Level : MonoBehaviour {
     }
     public List<Vector3Int> GetPathByRoad(Vector3Int startPosition, Vector3Int endPosition) {
         PathNode lastPathNode = GetLastPathNode(startPosition, endPosition);
+        List<Vector3Int> newPathList = new List<Vector3Int>();
         if (lastPathNode == null) {
             Debug.Log("no path found");
-            return null;
+            return newPathList;
         }
 
-        List<Vector3Int> newPathList = new List<Vector3Int>();
 
         PathNode current = lastPathNode;
         while (current.parent != null) {
@@ -248,7 +250,6 @@ public class Level : MonoBehaviour {
         Dictionary<Vector3Int, PathNode> pathNodes = new Dictionary<Vector3Int, PathNode>();
         foreach (var voxel in voxelsDictionary) {
             if (voxel.Value is RoadVoxel) {
-                Debug.Log("road", voxel.Value);
                 pathNodes.Add(voxel.Key, new PathNode {
                     position = voxel.Key,
                     h = (voxel.Key - endPosition).magnitude,
@@ -331,6 +332,22 @@ public class Level : MonoBehaviour {
             }
             if (GUILayout.Button("ReadFromJson")) {
                 level.LoadLevelFromJson();
+            }
+
+            if (GUILayout.Button("RemoveOldObjects /Editor only!")) {
+                // remove old objects
+                for (int i = 0; i < level.roadVoxelsHolder.childCount; i++) {
+                    DestroyImmediate(level.roadVoxelsHolder.GetChild(i).gameObject);
+                }
+                for (int i = 0; i < level.solidVoxelsHolder.childCount; i++) {
+                    DestroyImmediate(level.solidVoxelsHolder.GetChild(i).gameObject);
+                }
+                for (int i = 0; i < level.buildingHolder.childCount; i++) {
+                    DestroyImmediate(level.buildingHolder.GetChild(i).gameObject);
+                }
+                for (int i = 0; i < level.carHolder.childCount; i++) {
+                    DestroyImmediate(level.carHolder.GetChild(i).gameObject);
+                }
             }
 
         }

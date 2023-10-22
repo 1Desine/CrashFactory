@@ -87,7 +87,7 @@ public class Player : MonoBehaviour {
         Vector3 upMoveDirection = Vector3.Cross(transform.right, toPoint);
         Vector3 rightMoveDirection = Vector3.Cross(transform.up, toPoint);
 
-        transform.position += (upMoveDirection * rotate.y + rightMoveDirection * -rotate.x) * Mathf.PI / 180;
+        transform.position += (upMoveDirection * rotate.y + rightMoveDirection * -rotate.x) * Mathf.Deg2Rad;
 
         RotatePlayerY_CameraX(rotate);
     }

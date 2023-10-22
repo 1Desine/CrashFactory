@@ -1,6 +1,7 @@
 // REFERENCE https://youtu.be/CdPYlj5uZeI or https://www.youtube.com/watch?v=CdPYlj5uZeI&t=13s&ab_channel=ToyfulGames
 
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 public class Car : MonoBehaviour {
@@ -12,7 +13,6 @@ public class Car : MonoBehaviour {
     [SerializeField, Min(0)] private float springStrength = 400f;
     [SerializeField, Min(0)] private float springDamper = 5f;
     [SerializeField, Min(0)] private float springDistance = 0.12f;
-    public float rearAxilOffset = -0.5f;
 
 
     [Header("Wheels")]
@@ -117,10 +117,9 @@ public class Car : MonoBehaviour {
     }
 
     private void Update() {
-        //AgentControl();
-        Steer(Input.GetAxisRaw("Horizontal") * maxSteeringAngle);
-
-
+        AgentControl();
+        //Steer(Input.GetAxisRaw("Horizontal") * maxSteeringAngle);
+        //HandleAccelerationAndDeceleration(0);
 
 
         UpdateTireVisual();
@@ -137,7 +136,6 @@ public class Car : MonoBehaviour {
     private void FixedUpdate() {
         HandleSuspention();
         ApplySideGrip();
-        HandleAccelerationAndDeceleration();
     }
 
     public void DestroySelf() {
@@ -170,17 +168,17 @@ public class Car : MonoBehaviour {
         }
     }
 
-    private void HandleAccelerationAndDeceleration() {
-        float throttleInputNormalized = 0f;
+    private void HandleAccelerationAndDeceleration(float throttleInput) {
+        Debug.Log(throttleInput);
 
         if (Input.GetKey(KeyCode.W)) {
-            throttleInputNormalized++;
+            throttleInput++;
         }
         if (Input.GetKey(KeyCode.S)) {
-            throttleInputNormalized--;
+            throttleInput--;
         }
         if (Input.GetKey(KeyCode.LeftShift)) {
-            throttleInputNormalized *= 1.5f;
+            throttleInput *= 1.5f;
         }
 
         foreach (TireRayCast tire in tireRayCastList) {
@@ -193,7 +191,7 @@ public class Car : MonoBehaviour {
                 float forceToApply = 0;
                 float directionOfForce = 0;
                 // auto decelerating
-                if (throttleInputNormalized == 0) {
+                if (throttleInput == 0) {
                     if (tire.canDecelerate) {
                         forceToApply = Mathf.Min(tireForwardVelocity.magnitude * 1000, autoDecelerationForceLimit);
                     }
@@ -203,16 +201,16 @@ public class Car : MonoBehaviour {
                     // acceletating or decelerating
                     float throtleToApply = acceleration * powerCurve.Evaluate(Mathf.Clamp01(Mathf.Abs(Vector3.Dot(transform.forward, body.velocity)) / carTopSpeed));
 
-                    if (Vector3.Dot(forwardByNormal * throttleInputNormalized, tireForwardVelocity) > 0) {
+                    if (Vector3.Dot(forwardByNormal * throttleInput, tireForwardVelocity) > 0) {
                         if (tire.canAccelerate) forceToApply = throtleToApply / amountOfAcceleratingWheels;
                     }
                     else {
                         if (tire.canDecelerate) forceToApply = deceleration / amountOfDeceleratingWheels;
                     }
-                    directionOfForce = throttleInputNormalized;
+                    directionOfForce = throttleInput;
                 }
 
-                body.AddForceAtPosition(forwardByNormal * directionOfForce * forceToApply * Time.fixedDeltaTime, tireRay.point);
+                body.AddForceAtPosition(forwardByNormal * directionOfForce * forceToApply * Time.deltaTime, tireRay.point);
             }
         }
     }
@@ -230,8 +228,8 @@ public class Car : MonoBehaviour {
 
                 body.AddForceAtPosition(-sideVelocity * Time.fixedDeltaTime, tireRay.point);
 
-                Debug.DrawRay(tireRay.point + tire.transform.up, sideVelocity, Color.red);
-                Debug.DrawRay(tireRay.point + tire.transform.up, Vector3.Cross(tire.transform.right, tireRay.normal) / 2, Color.blue);
+                //Debug.DrawRay(tireRay.point + tire.transform.up, sideVelocity, Color.red);
+                //Debug.DrawRay(tireRay.point + tire.transform.up, Vector3.Cross(tire.transform.right, tireRay.normal) / 2, Color.blue);
             }
         }
     }
@@ -291,15 +289,31 @@ public class Car : MonoBehaviour {
 
     public void SetTask(TaskMaganer.Task task) {
         Debug.Log("car: tast set");
-        Debug.Log("amount of cargo" + task.cargoResource.amount);
+        Debug.Log("amount of cargo: " + task.cargoResource.amount);
+        roadPath = Level.Instance.GetPathByRoad(Vector3Int.up, new Vector3Int(5, 1, 5));
     }
 
 
     private void AgentControl() {
-        Steer(Vector3.SignedAngle(transform.forward, GetCurrentWayPoint() - transform.position + transform.forward * rearAxilOffset, Vector3.up));
+        Steer(AngleOffAroundAxis(transform.forward, GetCurrentWayPoint() - transform.position - transform.forward * wheelBase / 2, Vector3.up));
+
+        float forwardForce = 0;
+        if (roadPath.Count > 0) {
+            if (body.velocity.magnitude < 1) forwardForce = 1;
+            if (body.velocity.magnitude > 1) forwardForce = -1;
+        }
+        HandleAccelerationAndDeceleration(forwardForce);
     }
+
+    private float AngleOffAroundAxis(Vector3 v, Vector3 forward, Vector3 axis) {
+        Vector3 right = Vector3.Cross(forward, axis);
+        forward = Vector3.Cross(axis, right);
+
+        return Mathf.Atan2(Vector3.Dot(v, right), Vector3.Dot(v, forward)) * Mathf.Rad2Deg;
+    }
+
     private Vector3 GetCurrentWayPoint() {
-        if (roadPath.Count == 0) return transform.forward;
+        if (roadPath.Count == 0) return transform.position + transform.forward;
 
         currentWayPoint = Mathf.Min(currentWayPoint, roadPath.Count - 1);
 
@@ -319,37 +333,6 @@ public class Car : MonoBehaviour {
         return pointToGo;
     }
 
-    public void SetRoadPath(List<Vector3Int> pathList) {
-        roadPath = new List<Vector3Int> {
-            new Vector3Int(0,0,0),
-            new Vector3Int(0,0,1),
-            new Vector3Int(0,0,2),
-            new Vector3Int(0,0,3),
-            new Vector3Int(0,0,4),
-
-            new Vector3Int(1,0,4),
-            new Vector3Int(2,0,4),
-            new Vector3Int(3,0,4),
-            new Vector3Int(4,0,4),
-
-            new Vector3Int(5,0,5),
-            new Vector3Int(5,0,6),
-
-            new Vector3Int(6,0,6),
-            new Vector3Int(7,0,6),
-            new Vector3Int(7,0,7),
-            new Vector3Int(8,0,7),
-            new Vector3Int(9,0,7),
-            new Vector3Int(10,0,7),
-
-            new Vector3Int(10,0,4),
-            new Vector3Int(10,0,0),
-            new Vector3Int(4,0,0),
-            new Vector3Int(0,0,0),
-        };
-
-        //roadPath = pathList;
-    }
 
 
 
